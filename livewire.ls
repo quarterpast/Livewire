@@ -4,36 +4,33 @@ global import require \prelude-ls
 routes = {}
 
 respond(method,path,func)=
-	params = []
-	reg = "^"+(path.replace /:([a-z$_][a-z0-9$_]*)/ig,(m,param)->
-		params.push param
-		/([^\/]+)/$
-	)+"$"
-	|> RegExp _,\i
-
+	params = /:([a-z$_][a-z0-9$_]*)/i |> unfold (reg)->
+		if reg.exec path
+			path .= replace reg, /([^\/]+)/$
+			[that.0,reg]
+	reg = RegExp "^#{path}$",\i
+	func .= async!
 	func.match(req)=
-		if method.to-lower-case! is req.method.to-lower-case!
+		if method is req.method
 			if reg.exec req.url
 				[m,...values] = that
 				zip params,values |> list-to-obj
-			else false
-		else false
 
 	routes."#method #path" = func
 
 server = require \http .create-server (req,res)->
 	sync ->
 		try
+			console.time "#{req.method} #{req.url}"
 			routes
 			|> filter (.match req)
 			|> each (req@params import) . (.match req)
-			|> fold1 (out,route)->route.sync req,res,out
-			|> res~end
+			|> fold ((out,route)->route.sync req,res,out),""
+			|> req~end
+			console.time-end "#{req.method} #{req.url}"
 		catch => console.warn e.stack
 
-exports.listen = (...args)->
-	server.listen ...args
-	console.log "listening",...args
+export server~listen
 
 <[any get post put delete options trace patch connect head]>
-|> map (method)->exports[method] = respond method
+|> map ->exports[it] = respond it.to-upper-case!
