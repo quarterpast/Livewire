@@ -18,7 +18,7 @@ respond(method,path,func)=
 
 	routes."#method #path" = func
 
-server = require \http .create-server (req,res)->
+module.exports = require \http .create-server (req,res)->
 	sync ->
 		try
 			console.time "#{req.method} #{req.url}"
@@ -30,7 +30,5 @@ server = require \http .create-server (req,res)->
 			console.time-end "#{req.method} #{req.url}"
 		catch => console.warn e.stack
 
-export server~listen
-
 <[any get post put delete options trace patch connect head]>
-|> map ->exports[it] = respond it.to-upper-case!
+|> map ->module.exports[it] = respond it.to-upper-case!
