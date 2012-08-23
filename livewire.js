@@ -2,7 +2,7 @@
   var sync, routes, respond, slice$ = [].slice;
   sync = require('sync');
   import$(global, require('prelude-ls'));
-  routes = {};
+  routes = [];
   respond = curry$(function(method, path, func){
     var params, reg;
     params = unfold(function(reg){
@@ -16,16 +16,18 @@
     reg = RegExp("^" + path + "$", 'i');
     func = func.async();
     func.match = curry$(function(req){
-      var that, m, values;
+      var ref$, m, values;
       if (method === req.method) {
-        if (that = reg.exec(req.url)) {
-          m = that[0], values = slice$.call(that, 1);
+        ref$ = (ref$ = reg.exec(req.url)) != null
+          ? ref$
+          : [], m = ref$[0], values = slice$.call(ref$, 1);
+        if (m != null) {
           return listToObj(
           zip(params, values));
         }
       }
     });
-    return routes[method + " " + path] = func;
+    return routes.push(func);
   });
   module.exports = require('http').createServer(function(req, res){
     return sync(function(){
