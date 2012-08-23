@@ -17,14 +17,14 @@ respond(method,path,func)=
 	routes.push func
 
 module.exports = require \http .create-server (req,res)->sync ->try
-		console.time "#{req.method} #{req.url}"
-		routes
-		|> filter (.match req)
-		|> each (req@params import) . (.match req)
-		|> fold ((out,route)->route.sync req,res,out),"404 #{req.url}"
-		|> res~end
-		console.time-end "#{req.method} #{req.url}"
-	catch => console.warn e.stack
+	console.time "#{req.method} #{req.url}"
+	routes
+	|> filter (.match req)
+	|> each (req@params import) . (.match req)
+	|> fold ((out,route)->route.sync req,res,out),"404 #{req.url}"
+	|> res~end
+	console.time-end "#{req.method} #{req.url}"
+catch => console.warn e.stack
 
 <[any get post put delete options trace patch connect head]>
 |> map ->module.exports[it] = respond it.to-upper-case!
