@@ -32,7 +32,7 @@
       var e;
       try {
         console.time(req.method + " " + req.url);
-        bind$(req, 'end')(
+        bind$(res, 'end')(
         fold(function(out, route){
           return route.sync(req, res, out);
         }, "404 " + req.url)(

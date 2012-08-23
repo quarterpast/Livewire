@@ -26,7 +26,7 @@ module.exports = require \http .create-server (req,res)->
 			|> filter (.match req)
 			|> each (req@params import) . (.match req)
 			|> fold ((out,route)->route.sync req,res,out),"404 #{req.url}"
-			|> req~end
+			|> res~end
 			console.time-end "#{req.method} #{req.url}"
 		catch => console.warn e.stack
 
