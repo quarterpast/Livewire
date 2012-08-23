@@ -1,24 +1,35 @@
 sync = require \sync
 global import require \prelude-ls
+
+routes = {}
+
 respond(method,path,func)=
 	params = []
-	reg = path.replace /:([a-z$_][a-z0-9$_]*)/ig,(m,param)->
+	reg = "^"+(path.replace /:([a-z$_][a-z0-9$_]*)/ig,(m,param)->
 		params.push param
-		/[^\/]+/$
+		/([^\/]+)/$
+	)+"$"
 	|> RegExp _,\i
-	func.match(path)=
-		if reg.exec path
-			[m,...params] = that
-			zip params,values |> list-to-obj
+
+	func.match(req)=
+		if method.to-lower-case! is req.method.to-lower-case!
+			if reg.exec req.url
+				[m,...values] = that
+				zip params,values |> list-to-obj
+			else false
+		else false
+
+	routes."#method #path" = func
 
 server = require \http .create-server (req,res)->
 	sync ->
-		filter (.match req.path),respond
-		|> each (req@params import) . (.match req.path)
-		|> fold1 (out,route)->route.sync req,res,out
-		|> res.end _,\utf8
-	, (err)->
-		throw Error "error #err got to the top of sync"
+		try
+			routes
+			|> filter (.match req)
+			|> each (req@params import) . (.match req)
+			|> fold1 (out,route)->route.sync req,res,out
+			|> res~end
+		catch => console.warn e.stack
 
 exports.listen = (...args)->
 	server.listen ...args
