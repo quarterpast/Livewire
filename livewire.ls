@@ -10,7 +10,7 @@ respond(method,path,func)=
 			[that.0,reg]
 	reg = RegExp "^#{path}$",\i
 	func .= async!
-	func.match(req)=
+	func.match ?= (req)->
 		if method is req.method
 			[m,...values] = (reg.exec req.url) ? []
 			if m? then zip params,values |> list-to-obj
