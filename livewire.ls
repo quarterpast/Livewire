@@ -19,8 +19,7 @@ module.exports = new class Router
 				zip params,values |> list-to-obj
 		)>>@routes~push
 
-	{\any \get \post \put \delete \options \trace \patch \connect \head}
-	|> map ::respond<<(.to-upper-case!) |> (prototype import)
+	::<<< map ::respond, {\ANY \GET \POST \PUT \DELETE \OPTIONS \TRACE \PATCH \CONNECT \HEAD}
 	::'*' = ::any
 
 	~>

@@ -43,25 +43,17 @@
       ]))(
       [].concat(funcs));
     });
-    (function(it){
-      return import$(prototype, it);
-    })(
-    map(compose$([
-      prototype.respond, function(it){
-        return it.toUpperCase();
-      }
-    ]))(
-    {
-      'any': 'any',
-      'get': 'get',
-      'post': 'post',
-      'put': 'put',
-      'delete': 'delete',
-      'options': 'options',
-      'trace': 'trace',
-      'patch': 'patch',
-      'connect': 'connect',
-      'head': 'head'
+    import$(prototype, map(prototype.respond, {
+      'ANY': 'ANY',
+      'GET': 'GET',
+      'POST': 'POST',
+      'PUT': 'PUT',
+      'DELETE': 'DELETE',
+      'OPTIONS': 'OPTIONS',
+      'TRACE': 'TRACE',
+      'PATCH': 'PATCH',
+      'CONNECT': 'CONNECT',
+      'HEAD': 'HEAD'
     }));
     prototype['*'] = prototype.any;
     function Router(){

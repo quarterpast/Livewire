@@ -1,7 +1,7 @@
-require "./livewire"
-	..get "/" ->"hello world"
-	..get "/:name" [
+with require "./livewire"
+	@GET "/" ->"hello world"
+	@GET "/:name" [
 		->"hello #{@params.name}"
 		->"hello #{&1}"
 	]
-	..listen 8000, ->console.log \listening
+	@listen 8000, ->console.log \listening
