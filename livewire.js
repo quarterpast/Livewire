@@ -71,7 +71,13 @@
           var e;
           try {
             console.time(req.method + " " + req.url);
-            bind$(res, 'end')(
+            (function(it){
+              if (it.readable) {
+                return req.pipe(it);
+              } else {
+                return req.end(it);
+              }
+            })(
             fold(function(out, route){
               return route.sync(req, res, out);
             }, "404 " + req.url)(
