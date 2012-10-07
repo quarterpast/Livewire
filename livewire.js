@@ -43,6 +43,9 @@
       ]))(
       [].concat(funcs));
     });
+    prototype.use = function(it){
+      return this.routes.push(it);
+    };
     import$(prototype, map(prototype.respond, {
       'ANY': 'ANY',
       'GET': 'GET',
@@ -60,17 +63,10 @@
       var server, this$ = this instanceof ctor$ ? this : new ctor$;
       server = require('http').createServer(function(req, res){
         return sync(function(){
-          var e;
+          var out, e;
           try {
             console.time(req.method + " " + req.url);
-            (function(it){
-              if (it.readable) {
-                return res.pipe(it);
-              } else {
-                return res.end(it);
-              }
-            })(
-            fold(function(out, route){
+            out = fold(function(out, route){
               return route.sync(req, res, out);
             }, "404 " + req.url)(
             each(compose$([
@@ -83,7 +79,12 @@
             filter(function(it){
               return it.match(req);
             })(
-            this$.routes))));
+            this$.routes)));
+            res.writeHead(res.statusCode, res.headers || (res.headers = {}));
+            (out.readable
+              ? res.pipe
+              : res.end)(
+            out);
             return console.timeEnd(req.method + " " + req.url);
           } catch (e$) {
             e = e$;

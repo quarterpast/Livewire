@@ -18,6 +18,7 @@ module.exports = new class Router
 				[m,...values] = (reg.exec req.url) ? []
 				zip params,values |> list-to-obj
 		)>>@routes~push
+	use: ->@routes.push it
 
 	::<<< map ::respond, {\ANY \GET \POST \PUT \DELETE \OPTIONS \TRACE \PATCH \CONNECT \HEAD}
 	::'*' = ::any
@@ -25,11 +26,13 @@ module.exports = new class Router
 	~>
 		server = require \http .create-server (req,res)~>sync ~>try
 			console.time "#{req.method} #{req.url}"
-			@routes
+			out = @routes
 			|> filter (.match req)
 			|> each (req@params import)<<(.extract req)
 			|> fold ((out,route)->route.sync req,res,out),"404 #{req.url}"
-			|> ->if it.readable then res.pipe it else res.end it
+			res.write-head res.status-code, res@headers
+			out |> if out.readable then res.pipe else res.end
+
 			console.time-end "#{req.method} #{req.url}"
 		catch => res.end e.stack
 
