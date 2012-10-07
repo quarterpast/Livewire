@@ -9,15 +9,14 @@ module.exports = new class Router
 				[that.0,reg]
 		reg = RegExp "^#{path}$",\i
 		@routes .= concat do
-			funcs |> map (.async!) |> each (.match ?= (req)->
+			[]+++funcs |> map (.async!) |> each (.match ?= (req)->
 				if method in [\ANY req.method]
 					[m,...values] = (reg.exec req.url) ? []
 					if m? then zip params,values |> list-to-obj
 			)
 
-	<[any get post put delete options trace patch connect head]>
-	|> map ->::[it] = ::respond it.to-upper-case!
-
+	{\any \get \post \put \delete \options \trace \patch \connect \head}
+	|> map ::respond . (.to-upper-case!) |> (prototype import)
 	::'*' = ::any
 
 	~>

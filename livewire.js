@@ -36,12 +36,28 @@
       map(function(it){
         return it.async();
       })(
-      funcs)));
+      [].concat(funcs))));
     });
-    map(function(it){
-      return prototype[it] = prototype.respond(it.toUpperCase());
+    (function(it){
+      return import$(prototype, it);
     })(
-    ['any', 'get', 'post', 'put', 'delete', 'options', 'trace', 'patch', 'connect', 'head']);
+    map(compose$([
+      prototype.respond, function(it){
+        return it.toUpperCase();
+      }
+    ]))(
+    {
+      'any': 'any',
+      'get': 'get',
+      'post': 'post',
+      'put': 'put',
+      'delete': 'delete',
+      'options': 'options',
+      'trace': 'trace',
+      'patch': 'patch',
+      'connect': 'connect',
+      'head': 'head'
+    }));
     prototype['*'] = prototype.any;
     function Router(){
       var server, this$ = this instanceof ctor$ ? this : new ctor$;
@@ -85,8 +101,10 @@
         curry$.call(this, f, params) : f.apply(this, params);
     } : f;
   }
-  function bind$(obj, key, target){
-    return function(){ return (target || obj)[key].apply(obj, arguments) };
+  function import$(obj, src){
+    var own = {}.hasOwnProperty;
+    for (var key in src) if (own.call(src, key)) obj[key] = src[key];
+    return obj;
   }
   function compose$(fs){
     return function(){
@@ -95,10 +113,8 @@
       return args[0];
     };
   }
-  function import$(obj, src){
-    var own = {}.hasOwnProperty;
-    for (var key in src) if (own.call(src, key)) obj[key] = src[key];
-    return obj;
+  function bind$(obj, key, target){
+    return function(){ return (target || obj)[key].apply(obj, arguments) };
   }
   function importAll$(obj, src){
     for (var key in src) obj[key] = src[key];
