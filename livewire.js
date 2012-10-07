@@ -73,9 +73,9 @@
             console.time(req.method + " " + req.url);
             (function(it){
               if (it.readable) {
-                return req.pipe(it);
+                return res.pipe(it);
               } else {
-                return req.end(it);
+                return res.end(it);
               }
             })(
             fold(function(out, route){

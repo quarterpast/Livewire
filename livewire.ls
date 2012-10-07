@@ -30,7 +30,7 @@ module.exports = new class Router
 			|> filter (.match req)
 			|> each (req@params import)<<(.extract req)
 			|> fold ((out,route)->route.sync req,res,out),"404 #{req.url}"
-			|> ->if it.readable then req.pipe it else req.end it
+			|> ->if it.readable then res.pipe it else res.end it
 			console.time-end "#{req.method} #{req.url}"
 		catch => res.end e.stack
 
