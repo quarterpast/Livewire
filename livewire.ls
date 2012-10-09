@@ -1,5 +1,4 @@
 sync = require \sync
-{concat-map,map,filter,fold,each,unfold,zip,list-to-obj,tail} = require \prelude-ls
 
 module.exports = new class Router
 	routes:[]

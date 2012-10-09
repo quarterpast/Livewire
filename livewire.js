@@ -1,7 +1,11 @@
 (function(){
-  var sync, ref$, concatMap, map, filter, fold, each, unfold, zip, listToObj, tail, Router, toString$ = {}.toString;
+  var sync, Router, toString$ = {}.toString;
+    if (typeof window != 'undefined' && window !== null) {
+    prelude.installPrelude(window);
+  } else {
+    require('prelude-ls').installPrelude(global);
+  };
   sync = require('sync');
-  ref$ = require('prelude-ls'), concatMap = ref$.concatMap, map = ref$.map, filter = ref$.filter, fold = ref$.fold, each = ref$.each, unfold = ref$.unfold, zip = ref$.zip, listToObj = ref$.listToObj, tail = ref$.tail;
   module.exports = new (Router = (function(){
     Router.displayName = 'Router';
     var prototype = Router.prototype, constructor = Router;
