@@ -19,7 +19,8 @@ module.exports = new class Router
 			match: it.match ? (req)->method in [\ANY req.method] and reg.test req.url
 			extract: it.extract ? (req)->
 				values = (reg.exec req.url) ? []
-				if params? then tail values |> zip that |> list-to-obj else values
+				req@params import if params? then tail values |> zip that |> list-to-obj else values
+				this
 		) |> each @routes~push
 	use: ->@routes.push it
 
@@ -31,8 +32,7 @@ module.exports = new class Router
 			[end$,res.end] = [res.end,->console.log "#{res.status-code} #{req.url}: #{current-time! - t}ms";end$ ...]
 
 			out = filter (.match req), @routes
-			|> each (req@params import)<<(.extract req)
-			|> map (.sync req,res,_)
+			|> map (.sync req,res,_)<<(.extract req)
 			|> fold (|>),"404 #{req.url}"
 			res.write-head res.status-code, res@headers
 			out |> if out.readable then (.pipe res) else res~end
