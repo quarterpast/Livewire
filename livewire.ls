@@ -20,8 +20,8 @@ module.exports = new class Router
 			match: it.match ? (req)->
 				method in [\ANY req.method] and reg.test req.url
 			extract: it.extract ? (req)->
-				[m,...values] = (reg.exec req.url) ? []
-				if params? then zip that,values |> list-to-obj else values
+				values = (reg.exec req.url) ? []
+				if params? then tail values |> zip that |> list-to-obj else values
 		)>>@routes~push
 	use: ->@routes.push it
 
