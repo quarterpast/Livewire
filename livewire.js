@@ -20,6 +20,9 @@
       Date);
     };
     prototype.routes = [];
+    String.prototype.pipe = Buffer.prototype.pipe = function(it){
+      return it.end(this);
+    };
     prototype.respond = curry$(function(method, path, funcs){
       var params, reg;
       reg = (function(){
@@ -88,7 +91,7 @@
       var server, this$ = this instanceof ctor$ ? this : new ctor$;
       server = require('http').createServer(function(req, res){
         return sync(function(){
-          var t, ref$, end$, out, e;
+          var t, ref$, end$, e;
           try {
             t = currentTime();
             ref$ = [
@@ -97,7 +100,10 @@
                 return end$.apply(this, arguments);
               }
             ], end$ = ref$[0], res.end = ref$[1];
-            out = fold(curry$(function(x$, y$){
+            return function(it){
+              return it.pipe(res);
+            }(
+            fold(curry$(function(x$, y$){
               return y$(x$);
             }), "404 " + req.url)(
             map(compose$([
@@ -109,14 +115,7 @@
             ]))(
             filter(function(it){
               return it.match(req);
-            }, this$.routes)));
-            res.writeHead(res.statusCode, res.headers || (res.headers = {}));
-            return (out.readable
-              ? function(it){
-                return it.pipe(res);
-              }
-              : bind$(res, 'end'))(
-            out);
+            }, this$.routes))));
           } catch (e$) {
             e = e$;
             return res.end(e.stack);

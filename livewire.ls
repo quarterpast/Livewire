@@ -25,7 +25,8 @@ module.exports = new class Router
 
 	::<<< map ::respond, {\ANY \GET \POST \PUT \DELETE \OPTIONS \TRACE \PATCH \CONNECT \HEAD}
 
-	~>server = require \http .create-server (req,res)~>sync ~>try
+	~>
+		server = require \http .create-server (req,res)~>sync ~>try
 			t = current-time!
 			[end$,res.end] = [res.end,->console.log "#{res.status-code} #{req.url}: #{current-time! - t}ms";end$ ...]
 
