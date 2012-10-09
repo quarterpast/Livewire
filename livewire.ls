@@ -1,6 +1,7 @@
 sync = require \sync
 
 module.exports = new class Router
+	current-time = ->Date|>(new)>>(.get-time!)
 	routes:[]
 
 	respond(method,path,funcs):
@@ -26,8 +27,8 @@ module.exports = new class Router
 
 	~>
 		server = require \http .create-server (req,res)~>sync ~>try
-			console.time "#{req.method} #{req.url}"
-			[end$,res.end] = [res.end,->console.time-end "#{req.method} #{req.url}"; end$ ...]
+			t = current-time!
+			[end$,res.end] = [res.end,->console.log "#{res.status-code} #{req.url}: #{current-time! - t}ms";end$ ...]
 
 			out = filter (.match req), @routes
 			|> each (req@params import)<<(.extract req)
