@@ -82,7 +82,9 @@
             this$.routes)));
             res.writeHead(res.statusCode, res.headers || (res.headers = {}));
             (out.readable
-              ? bind$(res, 'pipe')
+              ? function(it){
+                return it.pipe(res);
+              }
               : bind$(res, 'end'))(
             out);
             return console.timeEnd(req.method + " " + req.url);

@@ -31,7 +31,7 @@ module.exports = new class Router
 			|> each (req@params import)<<(.extract req)
 			|> fold ((out,route)->route.sync req,res,out),"404 #{req.url}"
 			res.write-head res.status-code, res@headers
-			out |> if out.readable then res~pipe else res~end
+			out |> if out.readable then (.pipe res) else res~end
 
 			console.time-end "#{req.method} #{req.url}"
 		catch => res.end e.stack
