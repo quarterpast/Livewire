@@ -1,5 +1,5 @@
 sync = require \sync
-{map,filter,fold,each,unfold,zip,list-to-obj} = require \prelude-ls
+{concat-map,map,filter,fold,each,unfold,zip,list-to-obj,tail} = require \prelude-ls
 
 module.exports = new class Router
 	routes:[]
@@ -7,10 +7,9 @@ module.exports = new class Router
 	respond(method,path,funcs):
 		reg = switch typeof! path
 		| \String =>
-			params = /:([a-z$_][a-z0-9$_]*)/i |> unfold (reg)->
-				if reg.exec path
-					path .= replace reg, /([^\/]+)/$
-					[that.1,reg]
+			params = /:([a-z$_][a-z0-9$_]*)/i |> unfold (reg)->if reg.exec path
+				path .= replace reg, /([^\/]+)/$
+				[that.1,reg]
 			RegExp "^#{path}$",\i
 		| \RegExp =>  path
 		| \Function => test:path,exec:path
@@ -31,8 +30,7 @@ module.exports = new class Router
 	~>
 		server = require \http .create-server (req,res)~>sync ~>try
 			console.time "#{req.method} #{req.url}"
-			out = @routes
-			|> filter (.match req)
+			out = filter (.match req), @routes
 			|> each (req@params import)<<(.extract req)
 			|> fold ((out,route)->route.sync req,res,out),"404 #{req.url}"
 			res.write-head res.status-code, res@headers

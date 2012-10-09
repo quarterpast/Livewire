@@ -1,24 +1,39 @@
 (function(){
-  var sync, ref$, map, filter, fold, each, unfold, zip, listToObj, Router, slice$ = [].slice;
+  var sync, ref$, concatMap, map, filter, fold, each, unfold, zip, listToObj, tail, Router, toString$ = {}.toString;
   sync = require('sync');
-  ref$ = require('prelude-ls'), map = ref$.map, filter = ref$.filter, fold = ref$.fold, each = ref$.each, unfold = ref$.unfold, zip = ref$.zip, listToObj = ref$.listToObj;
+  ref$ = require('prelude-ls'), concatMap = ref$.concatMap, map = ref$.map, filter = ref$.filter, fold = ref$.fold, each = ref$.each, unfold = ref$.unfold, zip = ref$.zip, listToObj = ref$.listToObj, tail = ref$.tail;
   module.exports = new (Router = (function(){
     Router.displayName = 'Router';
     var prototype = Router.prototype, constructor = Router;
     prototype.routes = [];
     prototype.respond = curry$(function(method, path, funcs){
       var params, reg;
-      params = unfold(function(reg){
-        var that;
-        if (that = reg.exec(path)) {
-          path = path.replace(reg, '([^\\/]+)');
-          return [that[1], reg];
+      reg = (function(){
+        switch (toString$.call(path).slice(8, -1)) {
+        case 'String':
+          params = unfold(function(reg){
+            var that;
+            if (that = reg.exec(path)) {
+              path = path.replace(reg, '([^\\/]+)');
+              return [that[1], reg];
+            }
+          })(
+          /:([a-z$_][a-z0-9$_]*)/i);
+          return RegExp("^" + path + "$", 'i');
+        case 'RegExp':
+          return path;
+        case 'Function':
+          return {
+            test: path,
+            exec: path
+          };
+        default:
+          throw new TypeError("Invalid path " + path);
         }
-      })(
-      /:([a-z$_][a-z0-9$_]*)/i);
-      reg = RegExp("^" + path + "$", 'i');
-      return map(compose$([
-        bind$(this.routes, 'push'), (function(it){
+      }());
+      return each(bind$(this.routes, 'push'))(
+      concatMap(compose$([
+        (function(it){
           var ref$;
           return import$(it, {
             match: (ref$ = it.match) != null
@@ -29,19 +44,24 @@
             extract: (ref$ = it.extract) != null
               ? ref$
               : function(req){
-                var ref$, m, values;
-                ref$ = (ref$ = reg.exec(req.url)) != null
+                var ref$, values, that;
+                values = (ref$ = reg.exec(req.url)) != null
                   ? ref$
-                  : [], m = ref$[0], values = slice$.call(ref$, 1);
-                return listToObj(
-                zip(params, values));
+                  : [];
+                if ((that = params) != null) {
+                  return listToObj(
+                  zip(that)(
+                  tail(values)));
+                } else {
+                  return values;
+                }
               }
           });
         }), function(it){
           return it.async();
         }
       ]))(
-      [].concat(funcs));
+      [].concat(funcs)));
     });
     prototype.use = function(it){
       return this.routes.push(it);
@@ -78,8 +98,7 @@
             ]))(
             filter(function(it){
               return it.match(req);
-            })(
-            this$.routes)));
+            }, this$.routes)));
             res.writeHead(res.statusCode, res.headers || (res.headers = {}));
             (out.readable
               ? function(it){
@@ -99,15 +118,15 @@
     } function ctor$(){} ctor$.prototype = prototype;
     return Router;
   }()));
+  function bind$(obj, key, target){
+    return function(){ return (target || obj)[key].apply(obj, arguments) };
+  }
   function compose$(fs){
     return function(){
       var i, args = arguments;
       for (i = fs.length; i > 0; --i) { args = [fs[i-1].apply(this, args)]; }
       return args[0];
     };
-  }
-  function bind$(obj, key, target){
-    return function(){ return (target || obj)[key].apply(obj, arguments) };
   }
   function import$(obj, src){
     var own = {}.hasOwnProperty;
