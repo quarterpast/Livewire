@@ -16,13 +16,12 @@ module.exports = new class Router
 		| otherwise => throw new TypeError "Invalid path #path"
 
 		[]+++funcs |> concat-map (.async!)>>(import do
-			match: it.match ? (req)->method in [\ANY req.method] and reg.test req.url
-			extract: it.extract ? (req)->
+			match: (req)->method in [\ANY req.method] and (it.match ? reg.test) req.url
+			extract: (req)->
 				values = (reg.exec req.url) ? []
 				req@params import if params? then tail values |> zip that |> list-to-obj else values
 				this
 		) |> each @routes~push
-	use: ->@routes.push it
 
 	::<<< map ::respond, {\ANY \GET \POST \PUT \DELETE \OPTIONS \TRACE \PATCH \CONNECT \HEAD}
 
