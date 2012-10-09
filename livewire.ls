@@ -1,9 +1,10 @@
 sync = require \sync
 
 module.exports = new class Router
-	current-time = ->Date|>(new)>>(.get-time!)
+	time = ->Date|>(new)>>(.get-time!)
 	routes:[]
-	String::pipe = Buffer::pipe = (.end this)
+	String::pipe = (.end String this)
+	Buffer::pipe = (.end this)
 	respond(method,path,funcs):
 		reg = switch typeof! path
 		| \String =>
@@ -27,13 +28,12 @@ module.exports = new class Router
 
 	~>
 		server = require \http .create-server (req,res)~>sync ~>try
-			t = current-time!
-			[end$,res.end] = [res.end,->console.log "#{res.status-code} #{req.url}: #{current-time! - t}ms";end$ ...]
+			start = time!
+			[end$,res.end] = [res.end,->console.log "#{res.status-code} #{req.url}: #{time! - start}ms";end$ ...]
 
 			filter (.match req), @routes
 			|> map (.sync req,res,_)<<(.extract req)
 			|> fold (|>),"404 #{req.url}"
 			|> (.pipe res)
 		catch => res.end e.stack
-
 		return server import all this

@@ -8,8 +8,8 @@
   sync = require('sync');
   module.exports = new (Router = (function(){
     Router.displayName = 'Router';
-    var currentTime, prototype = Router.prototype, constructor = Router;
-    currentTime = function(){
+    var time, prototype = Router.prototype, constructor = Router;
+    time = function(){
       return compose$([
         function(it){
           return it.getTime();
@@ -20,7 +20,10 @@
       Date);
     };
     prototype.routes = [];
-    String.prototype.pipe = Buffer.prototype.pipe = function(it){
+    String.prototype.pipe = function(it){
+      return it.end(String(this));
+    };
+    Buffer.prototype.pipe = function(it){
       return it.end(this);
     };
     prototype.respond = curry$(function(method, path, funcs){
@@ -91,12 +94,12 @@
       var server, this$ = this instanceof ctor$ ? this : new ctor$;
       server = require('http').createServer(function(req, res){
         return sync(function(){
-          var t, ref$, end$, e;
+          var start, ref$, end$, e;
           try {
-            t = currentTime();
+            start = time();
             ref$ = [
               res.end, function(){
-                console.log(res.statusCode + " " + req.url + ": " + (currentTime() - t) + "ms");
+                console.log(res.statusCode + " " + req.url + ": " + (time() - start) + "ms");
                 return end$.apply(this, arguments);
               }
             ], end$ = ref$[0], res.end = ref$[1];
