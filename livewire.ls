@@ -33,7 +33,6 @@ module.exports = new class Router
 			out = filter (.match req), @routes
 			|> map (.sync req,res,_)<<(.extract req)
 			|> fold (|>),"404 #{req.url}"
-			res.write-head res.status-code, res@headers
 			out |> if out.readable then (.pipe res) else res~end
 		catch => res.end e.stack
 
