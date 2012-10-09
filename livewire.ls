@@ -27,7 +27,7 @@ module.exports = new class Router
 	~>
 		server = require \http .create-server (req,res)~>sync ~>try
 			console.time "#{req.method} #{req.url}"
-			[end$,req.end] = [req.end,->console.time-end "#{req.method} #{req.url}"]
+			[end$,res.end] = [res.end,->console.time-end "#{req.method} #{req.url}"; end$ ...]
 
 			out = filter (.match req), @routes
 			|> each (req@params import)<<(.extract req)
