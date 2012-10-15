@@ -34,5 +34,5 @@ module.exports = new class Router
 			[r.extract req .sync req,res,_ for r in @routes when r.match req]
 			|> fold (|>),"404 #{req.url}"
 			|> (.pipe res)
-		catch => res.end e.stack
+		catch => (if @error? then that else res~end) e.stack
 		return server import all this

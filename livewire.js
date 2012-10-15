@@ -94,7 +94,7 @@
       var server, this$ = this instanceof ctor$ ? this : new ctor$;
       server = require('http').createServer(function(req, res){
         return sync(function(){
-          var start, ref$, end$, r, e;
+          var start, ref$, end$, r, e, that;
           try {
             start = time();
             ref$ = [
@@ -121,7 +121,9 @@
             }.call(this$))));
           } catch (e$) {
             e = e$;
-            return res.end(e.stack);
+            return ((that = this$.error) != null
+              ? that
+              : bind$(res, 'end'))(e.stack);
           }
         });
       });
