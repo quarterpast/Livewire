@@ -4,7 +4,7 @@
     return it.end(this.constructor(this));
   };
   module.exports = (function(me, routes){
-    var server, this$ = this;
+    var server;
     me.respond = curry$(function(method, path, funcs){
       var params, reg;
       reg = (function(){
@@ -75,7 +75,7 @@
     }));
     server = require('http').createServer(function(req, res){
       return require('sync')(function(){
-        var ref$, end$, start, r, e, that;
+        var ref$, end$, start, r, e;
         try {
           ref$ = [
             res.end, Date.now(), function(){
@@ -102,9 +102,7 @@
           }())));
         } catch (e$) {
           e = e$;
-          return ((that = this$.error) != null
-            ? that
-            : bind$(res, 'end'))(e.stack);
+          return res.end(e.stack);
         }
       });
     });

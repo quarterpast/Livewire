@@ -22,12 +22,12 @@ module.exports = let me = {}, routes = []
 
 	me<<<map me.respond,{\ANY \GET \POST \PUT \DELETE \OPTIONS \TRACE \CONNECT \HEAD}
 
-	server = require \http .create-server (req,res)~>require \sync <| ~>try
+	server = require \http .create-server (req,res)->require \sync <| ->try
 		[end$,start,res.end] = [res.end,Date.now!,
 		->console.log "#{res.status-code} #{req.url}: #{Date.now! - start}ms";end$ ...]
 		req <<< require \url .parse req.url,yes
 		[r.extract req .sync req,res,_ for r in routes when r.match req]
 		|> fold (|>),"404 #{req.url}"
 		|> (.pipe res)
-	catch => (if @error? then that else res~end) e.stack
+	catch => res.end e.stack
 	server <<<< me
