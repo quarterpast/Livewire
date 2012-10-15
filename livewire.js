@@ -32,7 +32,7 @@
           throw new TypeError("Invalid path " + path);
         }
       }());
-      return each(bind$(this.routes || (this.routes = []), 'push'))(
+      return each(bind$(this.routes, 'push'))(
       concatMap(compose$([
         (function(it){
           return import$(it, (function(orig){
@@ -75,8 +75,11 @@
       'CONNECT': 'CONNECT',
       'HEAD': 'HEAD'
     }));
-    function Router(){
+    function Router(routes){
       var server, this$ = this instanceof ctor$ ? this : new ctor$;
+      this$.routes = routes != null
+        ? routes
+        : [];
       server = require('http').createServer(function(req, res){
         return sync(function(){
           var start, ref$, end$, r, e, that;

@@ -19,11 +19,11 @@ module.exports = new class Router
 				values = (reg.exec it.url) ? []
 				it@params <<< if params? then tail values |> zip that |> list-to-obj else values
 				this
-		)<<(.async!) |> each this@@routes~push
+		)<<(.async!) |> each @routes~push
 
 	::<<< map ::respond, {\ANY \GET \POST \PUT \DELETE \OPTIONS \TRACE \CONNECT \HEAD}
 
-	~>
+	(@routes = [])~>
 		server = require \http .create-server (req,res)~>sync ~>try
 			start = Date.now!
 			[end$,res.end] = [res.end,->console.log "#{res.status-code} #{req.url}: #{Date.now! - start}ms";end$ ...]
