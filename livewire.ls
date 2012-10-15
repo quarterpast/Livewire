@@ -1,7 +1,7 @@
 sync = require \sync
+String::pipe = Buffer::pipe = (.end @constructor this)
 
 module.exports = new class Router
-	String::pipe = Buffer::pipe = (.end @constructor this)
 	respond(method,path,funcs):
 		reg = switch typeof! path
 		| \String =>

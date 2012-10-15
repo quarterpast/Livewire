@@ -1,12 +1,12 @@
 (function(){
   var sync, Router, toString$ = {}.toString, slice$ = [].slice;
   sync = require('sync');
+  String.prototype.pipe = Buffer.prototype.pipe = function(it){
+    return it.end(this.constructor(this));
+  };
   module.exports = new (Router = (function(){
     Router.displayName = 'Router';
     var prototype = Router.prototype, constructor = Router;
-    String.prototype.pipe = Buffer.prototype.pipe = function(it){
-      return it.end(this.constructor(this));
-    };
     prototype.respond = curry$(function(method, path, funcs){
       var params, reg;
       reg = (function(){
