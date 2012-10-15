@@ -72,7 +72,6 @@
       'DELETE': 'DELETE',
       'OPTIONS': 'OPTIONS',
       'TRACE': 'TRACE',
-      'PATCH': 'PATCH',
       'CONNECT': 'CONNECT',
       'HEAD': 'HEAD'
     }));

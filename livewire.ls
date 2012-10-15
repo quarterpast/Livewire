@@ -21,7 +21,7 @@ module.exports = new class Router
 				this
 		)<<(.async!) |> each this@@routes~push
 
-	::<<< map ::respond, {\ANY \GET \POST \PUT \DELETE \OPTIONS \TRACE \PATCH \CONNECT \HEAD}
+	::<<< map ::respond, {\ANY \GET \POST \PUT \DELETE \OPTIONS \TRACE \CONNECT \HEAD}
 
 	~>
 		server = require \http .create-server (req,res)~>sync ~>try
