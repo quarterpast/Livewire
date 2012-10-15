@@ -3,9 +3,9 @@
   String.prototype.pipe = Buffer.prototype.pipe = function(it){
     return it.end(this.constructor(this));
   };
-  module.exports = (function(self, routes){
+  module.exports = (function(me, routes){
     var server, this$ = this;
-    self.respond = curry$(function(method, path, funcs){
+    me.respond = curry$(function(method, path, funcs){
       var params, reg;
       reg = (function(){
         switch (toString$.call(path).slice(8, -1)) {
@@ -62,7 +62,7 @@
       ]))(
       [].concat(funcs)));
     });
-    import$(self, map(self.respond, {
+    import$(me, map(me.respond, {
       'ANY': 'ANY',
       'GET': 'GET',
       'POST': 'POST',
@@ -108,7 +108,7 @@
         }
       });
     });
-    return importAll$(server, self);
+    return importAll$(server, me);
   }.call(this, {}, []));
   function bind$(obj, key, target){
     return function(){ return (target || obj)[key].apply(obj, arguments) };

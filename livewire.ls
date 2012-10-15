@@ -1,7 +1,7 @@
 String::pipe = Buffer::pipe = (.end @constructor this)
 
-module.exports = let self = {}, routes = []
-	self.respond(method,path,funcs)=
+module.exports = let me = {}, routes = []
+	me.respond(method,path,funcs)=
 		reg = switch typeof! path
 		| \String =>
 			params = /:([a-z$_][a-z0-9$_]*)/i |> unfold (ident)->if ident.exec path
@@ -20,7 +20,7 @@ module.exports = let self = {}, routes = []
 				this
 		)<<(.async!) |> each routes~push
 
-	self<<< map self.respond, {\ANY \GET \POST \PUT \DELETE \OPTIONS \TRACE \CONNECT \HEAD}
+	me<<<map me.respond,{\ANY \GET \POST \PUT \DELETE \OPTIONS \TRACE \CONNECT \HEAD}
 
 	server = require \http .create-server (req,res)~>require \sync <| ~>try
 		[end$,start,res.end] = [res.end,Date.now!,
@@ -30,4 +30,4 @@ module.exports = let self = {}, routes = []
 		|> fold (|>),"404 #{req.url}"
 		|> (.pipe res)
 	catch => (if @error? then that else res~end) e.stack
-	server <<<< self
+	server <<<< me
