@@ -14,12 +14,8 @@
       ])(
       Date);
     };
-    prototype.routes = [];
-    String.prototype.pipe = function(it){
-      return it.end(String(this));
-    };
-    Buffer.prototype.pipe = function(it){
-      return it.end(this);
+    String.prototype.pipe = Buffer.prototype.pipe = function(it){
+      return it.end(this.constructor(this));
     };
     prototype.respond = curry$(function(method, path, funcs){
       var params, reg;
@@ -46,7 +42,7 @@
           throw new TypeError("Invalid path " + path);
         }
       }());
-      return each(bind$(this.routes, 'push'))(
+      return each(bind$(this.routes || (this.routes = []), 'push'))(
       concatMap(compose$([
         (function(it){
           return import$(it, (function(orig){

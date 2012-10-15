@@ -2,9 +2,7 @@ sync = require \sync
 
 module.exports = new class Router
 	time = ->Date|>(new)>>(.get-time!)
-	routes:[]
-	String::pipe = (.end String this)
-	Buffer::pipe = (.end this)
+	String::pipe = Buffer::pipe = (.end @constructor this)
 	respond(method,path,funcs):
 		reg = switch typeof! path
 		| \String =>
@@ -22,7 +20,7 @@ module.exports = new class Router
 				values = (reg.exec req.url) ? []
 				req@params import if params? then tail values |> zip that |> list-to-obj else values
 				this
-		) |> each @routes~push
+		) |> each this@@routes~push
 
 	::<<< map ::respond, {\ANY \GET \POST \PUT \DELETE \OPTIONS \TRACE \PATCH \CONNECT \HEAD}
 
