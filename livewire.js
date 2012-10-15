@@ -94,7 +94,7 @@
       var server, this$ = this instanceof ctor$ ? this : new ctor$;
       server = require('http').createServer(function(req, res){
         return sync(function(){
-          var start, ref$, end$, e;
+          var start, ref$, end$, r, e;
           try {
             start = time();
             ref$ = [
@@ -109,16 +109,16 @@
             fold(curry$(function(x$, y$){
               return y$(x$);
             }), "404 " + req.url)(
-            map(compose$([
-              function(it){
-                return partialize$(it.sync, [req, res, void 8], [2]);
-              }, function(it){
-                return it.extract(req);
+            (function(){
+              var i$, ref$, len$, results$ = [];
+              for (i$ = 0, len$ = (ref$ = this.routes).length; i$ < len$; ++i$) {
+                r = ref$[i$];
+                if (r.match(req)) {
+                  results$.push(partialize$(r.extract(req).sync, [req, res, void 8], [2]));
+                }
               }
-            ]))(
-            filter(function(it){
-              return it.match(req);
-            }, this$.routes))));
+              return results$;
+            }.call(this$))));
           } catch (e$) {
             e = e$;
             return res.end(e.stack);

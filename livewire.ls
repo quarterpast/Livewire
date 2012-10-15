@@ -31,8 +31,7 @@ module.exports = new class Router
 			start = time!
 			[end$,res.end] = [res.end,->console.log "#{res.status-code} #{req.url}: #{time! - start}ms";end$ ...]
 
-			filter (.match req), @routes
-			|> map (.sync req,res,_)<<(.extract req)
+			[r.extract req .sync req,res,_ for r in @routes when r.match req]
 			|> fold (|>),"404 #{req.url}"
 			|> (.pipe res)
 		catch => res.end e.stack
