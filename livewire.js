@@ -3,17 +3,7 @@
   sync = require('sync');
   module.exports = new (Router = (function(){
     Router.displayName = 'Router';
-    var time, prototype = Router.prototype, constructor = Router;
-    time = function(){
-      return compose$([
-        function(it){
-          return it.getTime();
-        }, (function(it){
-          return new it;
-        })
-      ])(
-      Date);
-    };
+    var prototype = Router.prototype, constructor = Router;
     String.prototype.pipe = Buffer.prototype.pipe = function(it){
       return it.end(this.constructor(this));
     };
@@ -92,10 +82,10 @@
         return sync(function(){
           var start, ref$, end$, r, e, that;
           try {
-            start = time();
+            start = Date.now();
             ref$ = [
               res.end, function(){
-                console.log(res.statusCode + " " + req.url + ": " + (time() - start) + "ms");
+                console.log(res.statusCode + " " + req.url + ": " + (Date.now() - start) + "ms");
                 return end$.apply(this, arguments);
               }
             ], end$ = ref$[0], res.end = ref$[1];
@@ -128,15 +118,15 @@
     } function ctor$(){} ctor$.prototype = prototype;
     return Router;
   }()));
+  function bind$(obj, key, target){
+    return function(){ return (target || obj)[key].apply(obj, arguments) };
+  }
   function compose$(fs){
     return function(){
       var i, args = arguments;
       for (i = fs.length; i > 0; --i) { args = [fs[i-1].apply(this, args)]; }
       return args[0];
     };
-  }
-  function bind$(obj, key, target){
-    return function(){ return (target || obj)[key].apply(obj, arguments) };
   }
   function import$(obj, src){
     var own = {}.hasOwnProperty;
