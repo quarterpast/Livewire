@@ -13,11 +13,11 @@ module.exports = new class Router
 		| \Function => test:path,exec:path
 		| otherwise => throw new TypeError "Invalid path #path"
 
-		[]+++funcs |> concat-map (.async!)>>(import let orig = it.match
+		[]+++funcs |> concat-map (.async!)>>(<<< let orig = it.match
 			match: (req)->method in [\ANY req.method] and (orig ? reg~test<<(.url)) req
 			extract: (req)->
 				values = (reg.exec req.url) ? []
-				req@params import if params? then tail values |> zip that |> list-to-obj else values
+				req@params <<< if params? then tail values |> zip that |> list-to-obj else values
 				this
 		) |> each this@@routes~push
 
@@ -32,4 +32,4 @@ module.exports = new class Router
 			|> fold (|>),"404 #{req.url}"
 			|> (.pipe res)
 		catch => (if @error? then that else res~end) e.stack
-		return server import all this
+		return server <<< all this
