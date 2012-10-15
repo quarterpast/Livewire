@@ -1,10 +1,5 @@
 (function(){
   var sync, Router, toString$ = {}.toString, slice$ = [].slice;
-    if (typeof window != 'undefined' && window !== null) {
-    prelude.installPrelude(window);
-  } else {
-    require('prelude-ls').installPrelude(global);
-  };
   sync = require('sync');
   module.exports = new (Router = (function(){
     Router.displayName = 'Router';
@@ -54,24 +49,29 @@
       return each(bind$(this.routes, 'push'))(
       concatMap(compose$([
         (function(it){
-          return import$(it, {
-            match: function(req){
-              var ref$;
-              return (method == 'ANY' || method == req.method) && ((ref$ = it.match) != null
-                ? ref$
-                : reg.test)(req.url);
-            },
-            extract: function(req){
-              var ref$, values, that;
-              values = (ref$ = reg.exec(req.url)) != null
-                ? ref$
-                : [];
-              import$(req.params || (req.params = {}), (that = params) != null ? listToObj(
-              zip(that)(
-              tail(values))) : values);
-              return this;
-            }
-          });
+          return import$(it, (function(orig){
+            return {
+              match: function(req){
+                return (method == 'ANY' || method == req.method) && (orig != null
+                  ? orig
+                  : compose$([
+                    bind$(reg, 'test'), function(it){
+                      return it.url;
+                    }
+                  ]))(req);
+              },
+              extract: function(req){
+                var ref$, values, that;
+                values = (ref$ = reg.exec(req.url)) != null
+                  ? ref$
+                  : [];
+                import$(req.params || (req.params = {}), (that = params) != null ? listToObj(
+                zip(that)(
+                tail(values))) : values);
+                return this;
+              }
+            };
+          }.call(this, it.match)));
         }), function(it){
           return it.async();
         }

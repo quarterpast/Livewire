@@ -16,8 +16,8 @@ module.exports = new class Router
 		| \Function => test:path,exec:path
 		| otherwise => throw new TypeError "Invalid path #path"
 
-		[]+++funcs |> concat-map (.async!)>>(import do
-			match: (req)->method in [\ANY req.method] and (it.match ? reg.test) req.url
+		[]+++funcs |> concat-map (.async!)>>(import let orig = it.match
+			match: (req)->method in [\ANY req.method] and (orig ? reg~test<<(.url)) req
 			extract: (req)->
 				values = (reg.exec req.url) ? []
 				req@params import if params? then tail values |> zip that |> list-to-obj else values
