@@ -14,9 +14,9 @@ module.exports = new class Router
 		| otherwise => throw new TypeError "Invalid path #path"
 
 		[]+++funcs |> concat-map (<<< let orig = it.match
-			match: ->method in [\ANY it.method] and (orig ? reg~test<<(.url)) it
+			match: ->method in [\ANY it.method] and (orig ? reg~test<<(.pathname)) it
 			extract: ->
-				values = (reg.exec it.url) ? []
+				values = (reg.exec it.pathname) ? []
 				it@params <<< if params? then tail values |> zip that |> list-to-obj else values
 				this
 		)<<(.async!) |> each @routes~push
@@ -27,7 +27,7 @@ module.exports = new class Router
 		server = require \http .create-server (req,res)~>sync ~>try
 			start = Date.now!
 			[end$,res.end] = [res.end,->console.log "#{res.status-code} #{req.url}: #{Date.now! - start}ms";end$ ...]
-
+			req <<< require \url .parse req.url,yes
 			[r.extract req .sync req,res,_ for r in @routes when r.match req]
 			|> fold (|>),"404 #{req.url}"
 			|> (.pipe res)

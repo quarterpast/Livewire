@@ -42,13 +42,13 @@
                   ? orig
                   : compose$([
                     bind$(reg, 'test'), function(it){
-                      return it.url;
+                      return it.pathname;
                     }
                   ]))(it);
               },
               extract: function(it){
                 var ref$, values, that;
-                values = (ref$ = reg.exec(it.url)) != null
+                values = (ref$ = reg.exec(it.pathname)) != null
                   ? ref$
                   : [];
                 import$(it.params || (it.params = {}), (that = params) != null ? listToObj(
@@ -91,6 +91,7 @@
                 return end$.apply(this, arguments);
               }
             ], end$ = ref$[0], res.end = ref$[1];
+            import$(req, require('url').parse(req.url, true));
             return function(it){
               return it.pipe(res);
             }(
