@@ -12,11 +12,11 @@
       reg = (function(){
         switch (toString$.call(path).slice(8, -1)) {
         case 'String':
-          params = unfold(function(reg){
+          params = unfold(function(ident){
             var that;
-            if (that = reg.exec(path)) {
-              path = path.replace(reg, '([^\\/]+)');
-              return [that[1], reg];
+            if (that = ident.exec(path)) {
+              path = path.replace(ident, '([^\\/]+)');
+              return [that[1], ident];
             }
           })(
           /:([a-z$_][a-z0-9$_]*)/i);
@@ -37,21 +37,21 @@
         (function(it){
           return import$(it, (function(orig){
             return {
-              match: function(req){
-                return (method == 'ANY' || method == req.method) && (orig != null
+              match: function(it){
+                return (method == 'ANY' || method == it.method) && (orig != null
                   ? orig
                   : compose$([
                     bind$(reg, 'test'), function(it){
                       return it.url;
                     }
-                  ]))(req);
+                  ]))(it);
               },
-              extract: function(req){
+              extract: function(it){
                 var ref$, values, that;
-                values = (ref$ = reg.exec(req.url)) != null
+                values = (ref$ = reg.exec(it.url)) != null
                   ? ref$
                   : [];
-                import$(req.params || (req.params = {}), (that = params) != null ? listToObj(
+                import$(it.params || (it.params = {}), (that = params) != null ? listToObj(
                 zip(that)(
                 tail(values))) : values);
                 return this;

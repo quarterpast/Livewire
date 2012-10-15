@@ -5,19 +5,19 @@ module.exports = new class Router
 	respond(method,path,funcs):
 		reg = switch typeof! path
 		| \String =>
-			params = /:([a-z$_][a-z0-9$_]*)/i |> unfold (reg)->if reg.exec path
-				path .= replace reg, /([^\/]+)/$
-				[that.1,reg]
+			params = /:([a-z$_][a-z0-9$_]*)/i |> unfold (ident)->if ident.exec path
+				path .= replace ident, /([^\/]+)/$
+				[that.1,ident]
 			RegExp "^#{path}$",\i
 		| \RegExp =>  path
 		| \Function => test:path,exec:path
 		| otherwise => throw new TypeError "Invalid path #path"
 
 		[]+++funcs |> concat-map (<<< let orig = it.match
-			match: (req)->method in [\ANY req.method] and (orig ? reg~test<<(.url)) req
-			extract: (req)->
-				values = (reg.exec req.url) ? []
-				req@params <<< if params? then tail values |> zip that |> list-to-obj else values
+			match: ->method in [\ANY it.method] and (orig ? reg~test<<(.url)) it
+			extract: ->
+				values = (reg.exec it.url) ? []
+				it@params <<< if params? then tail values |> zip that |> list-to-obj else values
 				this
 		)<<(.async!) |> each this@@routes~push
 
