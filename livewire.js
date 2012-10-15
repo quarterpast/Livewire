@@ -1,12 +1,11 @@
 (function(){
-  var Router, toString$ = {}.toString, slice$ = [].slice;
+  var toString$ = {}.toString, slice$ = [].slice;
   String.prototype.pipe = Buffer.prototype.pipe = function(it){
     return it.end(this.constructor(this));
   };
-  module.exports = new (Router = (function(){
-    Router.displayName = 'Router';
-    var prototype = Router.prototype, constructor = Router;
-    prototype.respond = curry$(function(method, path, funcs){
+  module.exports = (function(self, routes){
+    var server, this$ = this;
+    self.respond = curry$(function(method, path, funcs){
       var params, reg;
       reg = (function(){
         switch (toString$.call(path).slice(8, -1)) {
@@ -31,7 +30,7 @@
           throw new TypeError("Invalid path " + path);
         }
       }());
-      return each(bind$(this.routes, 'push'))(
+      return each(bind$(routes, 'push'))(
       concatMap(compose$([
         (function(it){
           return import$(it, (function(orig){
@@ -63,7 +62,7 @@
       ]))(
       [].concat(funcs)));
     });
-    import$(prototype, map(prototype.respond, {
+    import$(self, map(self.respond, {
       'ANY': 'ANY',
       'GET': 'GET',
       'POST': 'POST',
@@ -74,51 +73,43 @@
       'CONNECT': 'CONNECT',
       'HEAD': 'HEAD'
     }));
-    function Router(routes){
-      var server, this$ = this instanceof ctor$ ? this : new ctor$;
-      this$.routes = routes != null
-        ? routes
-        : [];
-      server = require('http').createServer(function(req, res){
-        return require('sync')(function(){
-          var ref$, end$, start, r, e, that;
-          try {
-            ref$ = [
-              res.end, Date.now(), function(){
-                console.log(res.statusCode + " " + req.url + ": " + (Date.now() - start) + "ms");
-                return end$.apply(this, arguments);
+    server = require('http').createServer(function(req, res){
+      return require('sync')(function(){
+        var ref$, end$, start, r, e, that;
+        try {
+          ref$ = [
+            res.end, Date.now(), function(){
+              console.log(res.statusCode + " " + req.url + ": " + (Date.now() - start) + "ms");
+              return end$.apply(this, arguments);
+            }
+          ], end$ = ref$[0], start = ref$[1], res.end = ref$[2];
+          import$(req, require('url').parse(req.url, true));
+          return function(it){
+            return it.pipe(res);
+          }(
+          fold(curry$(function(x$, y$){
+            return y$(x$);
+          }), "404 " + req.url)(
+          (function(){
+            var i$, ref$, len$, results$ = [];
+            for (i$ = 0, len$ = (ref$ = routes).length; i$ < len$; ++i$) {
+              r = ref$[i$];
+              if (r.match(req)) {
+                results$.push(partialize$(r.extract(req).sync, [req, res, void 8], [2]));
               }
-            ], end$ = ref$[0], start = ref$[1], res.end = ref$[2];
-            import$(req, require('url').parse(req.url, true));
-            return function(it){
-              return it.pipe(res);
-            }(
-            fold(curry$(function(x$, y$){
-              return y$(x$);
-            }), "404 " + req.url)(
-            (function(){
-              var i$, ref$, len$, results$ = [];
-              for (i$ = 0, len$ = (ref$ = this.routes).length; i$ < len$; ++i$) {
-                r = ref$[i$];
-                if (r.match(req)) {
-                  results$.push(partialize$(r.extract(req).sync, [req, res, void 8], [2]));
-                }
-              }
-              return results$;
-            }.call(this$))));
-          } catch (e$) {
-            e = e$;
-            return ((that = this$.error) != null
-              ? that
-              : bind$(res, 'end'))(e.stack);
-          }
-        });
+            }
+            return results$;
+          }())));
+        } catch (e$) {
+          e = e$;
+          return ((that = this$.error) != null
+            ? that
+            : bind$(res, 'end'))(e.stack);
+        }
       });
-      return importAll$(server, this$);
-      return this$;
-    } function ctor$(){} ctor$.prototype = prototype;
-    return Router;
-  }()));
+    });
+    return importAll$(server, self);
+  }.call(this, {}, []));
   function bind$(obj, key, target){
     return function(){ return (target || obj)[key].apply(obj, arguments) };
   }

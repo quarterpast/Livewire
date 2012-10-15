@@ -1,7 +1,7 @@
 String::pipe = Buffer::pipe = (.end @constructor this)
 
-module.exports = new class Router
-	respond(method,path,funcs):
+module.exports = let self = {}, routes = []
+	self.respond(method,path,funcs)=
 		reg = switch typeof! path
 		| \String =>
 			params = /:([a-z$_][a-z0-9$_]*)/i |> unfold (ident)->if ident.exec path
@@ -18,17 +18,16 @@ module.exports = new class Router
 				values = (reg.exec it.pathname) ? []
 				it@params <<< if params? then tail values |> zip that |> list-to-obj else values
 				this
-		)<<(.async!) |> each @routes~push
+		)<<(.async!) |> each routes~push
 
-	::<<< map ::respond, {\ANY \GET \POST \PUT \DELETE \OPTIONS \TRACE \CONNECT \HEAD}
+	self<<< map self.respond, {\ANY \GET \POST \PUT \DELETE \OPTIONS \TRACE \CONNECT \HEAD}
 
-	(@routes = [])~>
-		server = require \http .create-server (req,res)~>require \sync <| ~>try
-			[end$,start,res.end] = [res.end,Date.now!,
-			->console.log "#{res.status-code} #{req.url}: #{Date.now! - start}ms";end$ ...]
-			req <<< require \url .parse req.url,yes
-			[r.extract req .sync req,res,_ for r in @routes when r.match req]
-			|> fold (|>),"404 #{req.url}"
-			|> (.pipe res)
-		catch => (if @error? then that else res~end) e.stack
-		return server <<< all this
+	server = require \http .create-server (req,res)~>require \sync <| ~>try
+		[end$,start,res.end] = [res.end,Date.now!,
+		->console.log "#{res.status-code} #{req.url}: #{Date.now! - start}ms";end$ ...]
+		req <<< require \url .parse req.url,yes
+		[r.extract req .sync req,res,_ for r in routes when r.match req]
+		|> fold (|>),"404 #{req.url}"
+		|> (.pipe res)
+	catch => (if @error? then that else res~end) e.stack
+	server <<<< self
