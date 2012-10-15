@@ -1,6 +1,5 @@
 (function(){
-  var sync, Router, toString$ = {}.toString, slice$ = [].slice;
-  sync = require('sync');
+  var Router, toString$ = {}.toString, slice$ = [].slice;
   String.prototype.pipe = Buffer.prototype.pipe = function(it){
     return it.end(this.constructor(this));
   };
@@ -81,16 +80,15 @@
         ? routes
         : [];
       server = require('http').createServer(function(req, res){
-        return sync(function(){
-          var start, ref$, end$, r, e, that;
+        return require('sync')(function(){
+          var ref$, end$, start, r, e, that;
           try {
-            start = Date.now();
             ref$ = [
-              res.end, function(){
+              res.end, Date.now(), function(){
                 console.log(res.statusCode + " " + req.url + ": " + (Date.now() - start) + "ms");
                 return end$.apply(this, arguments);
               }
-            ], end$ = ref$[0], res.end = ref$[1];
+            ], end$ = ref$[0], start = ref$[1], res.end = ref$[2];
             import$(req, require('url').parse(req.url, true));
             return function(it){
               return it.pipe(res);

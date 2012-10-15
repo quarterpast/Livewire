@@ -1,4 +1,3 @@
-sync = require \sync
 String::pipe = Buffer::pipe = (.end @constructor this)
 
 module.exports = new class Router
@@ -24,9 +23,9 @@ module.exports = new class Router
 	::<<< map ::respond, {\ANY \GET \POST \PUT \DELETE \OPTIONS \TRACE \CONNECT \HEAD}
 
 	(@routes = [])~>
-		server = require \http .create-server (req,res)~>sync ~>try
-			start = Date.now!
-			[end$,res.end] = [res.end,->console.log "#{res.status-code} #{req.url}: #{Date.now! - start}ms";end$ ...]
+		server = require \http .create-server (req,res)~>require \sync <| ~>try
+			[end$,start,res.end] = [res.end,Date.now!,
+			->console.log "#{res.status-code} #{req.url}: #{Date.now! - start}ms";end$ ...]
 			req <<< require \url .parse req.url,yes
 			[r.extract req .sync req,res,_ for r in @routes when r.match req]
 			|> fold (|>),"404 #{req.url}"
