@@ -1,6 +1,7 @@
 String::pipe = Buffer::pipe = (.end @constructor this)
+Function::first(fn)= orig = this; ->fn!; orig ...
 
-module.exports = let me = {}, routes = []
+module.exports = let me = {}, routes = [(->it.status-code = 404; "404 #{@pathname}")<<<match:(->yes),carp:->@]
 	me.respond(method,path,funcs)=
 		reg = switch typeof! path
 		| \String =>
@@ -14,20 +15,17 @@ module.exports = let me = {}, routes = []
 
 		[]+++funcs |> concat-map (<<< let orig = it.match
 			match: ->method in [\ANY it.method] and (orig ? reg~test<<(.pathname)) it
-			extract: ->
+			carp: ->
 				values = (reg.exec it.pathname) ? []
 				it@params <<< if params? then tail values |> zip that |> list-to-obj else values
 				this
 		)<<(.async!) |> each routes~push
-
+	me.use(fn)= routes.push fn<<<match:(->yes),carp:->@
 	me<<<map me.respond,{\ANY \GET \POST \PUT \DELETE \OPTIONS \TRACE \CONNECT \HEAD}
 
 	server = require \http .create-server (req,res)->require \sync <| ->try
-		[end$,start,res.end] = [res.end,Date.now!,
-		->console.log "#{res.status-code} #{req.url}: #{Date.now! - start}ms";end$ ...]
+		res.end .= first with Date.now! then ~>console.log "#{res.status-code} #{req.url}: #{Date.now! - this}ms"
 		req <<< require \url .parse req.url,yes
-		[r.extract req .sync req,res,_ for r in routes when r.match req]
-		|> fold (|>),"404 #{req.url}"
-		|> (.pipe res)
+		fold1 (|>),[r.carp req .sync req,res,_ for r in routes when r.match req] .pipe res
 	catch => res.end e.stack
 	server <<<< me

@@ -1,8 +1,16 @@
 (function(){
-  var toString$ = {}.toString, slice$ = [].slice;
+  var ref$, toString$ = {}.toString, slice$ = [].slice;
   String.prototype.pipe = Buffer.prototype.pipe = function(it){
     return it.end(this.constructor(this));
   };
+  Function.prototype.first = curry$(function(fn){
+    var orig;
+    orig = this;
+    return function(){
+      fn();
+      return orig.apply(this, arguments);
+    };
+  });
   module.exports = (function(me, routes){
     var server;
     me.respond = curry$(function(method, path, funcs){
@@ -44,7 +52,7 @@
                     }
                   ]))(it);
               },
-              extract: function(it){
+              carp: function(it){
                 var ref$, values, that;
                 values = (ref$ = reg.exec(it.pathname)) != null
                   ? ref$
@@ -62,6 +70,13 @@
       ]))(
       [].concat(funcs)));
     });
+    me.use = curry$(function(fn){
+      return routes.push((fn.match = function(){
+        return true;
+      }, fn.carp = function(){
+        return this;
+      }, fn));
+    });
     import$(me, map(me.respond, {
       'ANY': 'ANY',
       'GET': 'GET',
@@ -75,31 +90,25 @@
     }));
     server = require('http').createServer(function(req, res){
       return require('sync')(function(){
-        var ref$, end$, start, r, e;
+        var x$, r, e, this$ = this;
         try {
-          ref$ = [
-            res.end, Date.now(), function(){
-              console.log(res.statusCode + " " + req.url + ": " + (Date.now() - start) + "ms");
-              return end$.apply(this, arguments);
-            }
-          ], end$ = ref$[0], start = ref$[1], res.end = ref$[2];
-          import$(req, require('url').parse(req.url, true));
-          return function(it){
-            return it.pipe(res);
-          }(
-          fold(curry$(function(x$, y$){
-            return y$(x$);
-          }), "404 " + req.url)(
+          x$ = import$(clone$(res.end = res.end.first), Date.now());
           (function(){
+            return console.log(res.statusCode + " " + req.url + ": " + (Date.now() - this$) + "ms");
+          });
+          import$(req, require('url').parse(req.url, true));
+          return fold1(curry$(function(x$, y$){
+            return y$(x$);
+          }), (function(){
             var i$, ref$, len$, results$ = [];
             for (i$ = 0, len$ = (ref$ = routes).length; i$ < len$; ++i$) {
               r = ref$[i$];
               if (r.match(req)) {
-                results$.push(partialize$(r.extract(req).sync, [req, res, void 8], [2]));
+                results$.push(partialize$(r.carp(req).sync, [req, res, void 8], [2]));
               }
             }
             return results$;
-          }())));
+          }())).pipe(res);
         } catch (e$) {
           e = e$;
           return res.end(e.stack);
@@ -107,7 +116,21 @@
       });
     });
     return importAll$(server, me);
-  }.call(this, {}, []));
+  }.call(this, {}, [(ref$ = function(it){
+    it.statusCode = 404;
+    return "404 " + this.pathname;
+  }, ref$.match = function(){
+    return true;
+  }, ref$.carp = function(){
+    return this;
+  }, ref$)]));
+  function curry$(f, args){
+    return f.length > 1 ? function(){
+      var params = args ? args.concat() : [];
+      return params.push.apply(params, arguments) < f.length && arguments.length ?
+        curry$.call(this, f, params) : f.apply(this, params);
+    } : f;
+  }
   function bind$(obj, key, target){
     return function(){ return (target || obj)[key].apply(obj, arguments) };
   }
@@ -123,12 +146,9 @@
     for (var key in src) if (own.call(src, key)) obj[key] = src[key];
     return obj;
   }
-  function curry$(f, args){
-    return f.length > 1 ? function(){
-      var params = args ? args.concat() : [];
-      return params.push.apply(params, arguments) < f.length && arguments.length ?
-        curry$.call(this, f, params) : f.apply(this, params);
-    } : f;
+  function clone$(it){
+    function fun(){} fun.prototype = it;
+    return new fun;
   }
   function partialize$(f, args, where){
     return function(){
