@@ -1,5 +1,5 @@
+sync = require \sync
 String::pipe = Buffer::pipe = (.end @constructor this)
-Function::first(fn)= orig = this; ->fn!; orig ...
 
 module.exports = let me = {}, routes = [(->it.status-code = 404; "404 #{@pathname}")<<<match:(->yes),carp:->@]
 	me.respond(method,path,funcs)=
@@ -23,8 +23,8 @@ module.exports = let me = {}, routes = [(->it.status-code = 404; "404 #{@pathnam
 	me.use(fn)= routes.push fn<<<match:(->yes),carp:->@
 	me<<<map me.respond,{\ANY \GET \POST \PUT \DELETE \OPTIONS \TRACE \CONNECT \HEAD}
 
-	server = require \http .create-server (req,res)->require \sync <| ->try
-		res.end .= first with Date.now! then ~>console.log "#{res.status-code} #{req.url}: #{Date.now! - this}ms"
+	server = require \http .create-server (req,res,start = Date.now!, end$ = res.end)-> sync ->try
+		res.end = ->console.log "#{res.status-code} #{req.url}: #{Date.now! - start}ms"; end$ ...
 		req <<< require \url .parse req.url,yes
 		fold1 (|>),[r.carp req .sync req,res,_ for r in routes when r.match req] .pipe res
 	catch => res.end e.stack

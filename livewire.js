@@ -1,16 +1,9 @@
 (function(){
-  var ref$, toString$ = {}.toString, slice$ = [].slice;
+  var sync, ref$, toString$ = {}.toString, slice$ = [].slice;
+  sync = require('sync');
   String.prototype.pipe = Buffer.prototype.pipe = function(it){
     return it.end(this.constructor(this));
   };
-  Function.prototype.first = curry$(function(fn){
-    var orig;
-    orig = this;
-    return function(){
-      fn();
-      return orig.apply(this, arguments);
-    };
-  });
   module.exports = (function(me, routes){
     var server;
     me.respond = curry$(function(method, path, funcs){
@@ -89,13 +82,15 @@
       'HEAD': 'HEAD'
     }));
     server = require('http').createServer(function(req, res){
-      return require('sync')(function(){
-        var x$, r, e, this$ = this;
+      return sync(function(now, end){
+        var r, e;
+        now == null && (now = Date.now());
+        end == null && (end = req.end);
         try {
-          x$ = import$(clone$(res.end = res.end.first), Date.now());
-          (function(){
-            return console.log(res.statusCode + " " + req.url + ": " + (Date.now() - this$) + "ms");
-          });
+          res.end = function(){
+            console.log(res.statusCode + " " + req.url + ": " + (Date.now() - now) + "ms");
+            return end.apply(this, arguments);
+          };
           import$(req, require('url').parse(req.url, true));
           return fold1(curry$(function(x$, y$){
             return y$(x$);
@@ -124,13 +119,6 @@
   }, ref$.carp = function(){
     return this;
   }, ref$)]));
-  function curry$(f, args){
-    return f.length > 1 ? function(){
-      var params = args ? args.concat() : [];
-      return params.push.apply(params, arguments) < f.length && arguments.length ?
-        curry$.call(this, f, params) : f.apply(this, params);
-    } : f;
-  }
   function bind$(obj, key, target){
     return function(){ return (target || obj)[key].apply(obj, arguments) };
   }
@@ -146,9 +134,12 @@
     for (var key in src) if (own.call(src, key)) obj[key] = src[key];
     return obj;
   }
-  function clone$(it){
-    function fun(){} fun.prototype = it;
-    return new fun;
+  function curry$(f, args){
+    return f.length > 1 ? function(){
+      var params = args ? args.concat() : [];
+      return params.push.apply(params, arguments) < f.length && arguments.length ?
+        curry$.call(this, f, params) : f.apply(this, params);
+    } : f;
   }
   function partialize$(f, args, where){
     return function(){
