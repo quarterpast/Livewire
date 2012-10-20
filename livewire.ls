@@ -26,6 +26,6 @@ module.exports = let me = {}, routes = [(->it.status-code = 404; "404 #{@pathnam
 	server = require \http .create-server (req,res,start = Date.now!, end$ = res.end)-> sync ->try
 		res.end = ->console.log "#{res.status-code} #{req.url}: #{Date.now! - start}ms"; end$ ...
 		req <<< require \url .parse req.url,yes
-		fold1 (|>),[r.carp req .sync req,res,_ for r in routes when r.match req] .pipe res
+		fold (|>),null,[r.carp req .sync req,res,_ for r in routes when r.match req] .pipe res
 	catch => res.end e.stack
 	server <<<< me

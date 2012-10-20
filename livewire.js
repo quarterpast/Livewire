@@ -92,9 +92,9 @@
             return end$.apply(this, arguments);
           };
           import$(req, require('url').parse(req.url, true));
-          return fold1(curry$(function(x$, y$){
+          return fold(curry$(function(x$, y$){
             return y$(x$);
-          }), (function(){
+          }), null, (function(){
             var i$, ref$, len$, results$ = [];
             for (i$ = 0, len$ = (ref$ = routes).length; i$ < len$; ++i$) {
               r = ref$[i$];
