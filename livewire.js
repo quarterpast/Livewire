@@ -7,9 +7,9 @@
   module.exports = (function(me, routes){
     var server;
     me.respond = curry$(function(method, path, funcs){
-      var params, reg;
+      var origPath, params, reg;
       reg = (function(){
-        switch (toString$.call(path).slice(8, -1)) {
+        switch (toString$.call(origPath = path).slice(8, -1)) {
         case 'String':
           params = unfold(function(ident){
             var that;
@@ -43,7 +43,7 @@
                     bind$(reg, 'test'), function(it){
                       return it.pathname;
                     }
-                  ]))(it);
+                  ]))((it.route = origPath, it));
               },
               carp: function(it){
                 var ref$, values, that;

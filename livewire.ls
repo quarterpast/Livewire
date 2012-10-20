@@ -3,7 +3,7 @@ String::pipe = Buffer::pipe = (.end @constructor this)
 
 module.exports = let me = {}, routes = [(->it.status-code = 404; "404 #{@pathname}")<<<match:(->yes),carp:->@]
 	me.respond(method,path,funcs)=
-		reg = switch typeof! path
+		reg = switch typeof! orig-path = path
 		| \String =>
 			params = /:([a-z$_][a-z0-9$_]*)/i |> unfold (ident)->if ident.exec path
 				path .= replace ident, /([^\/]+)/$
@@ -14,7 +14,7 @@ module.exports = let me = {}, routes = [(->it.status-code = 404; "404 #{@pathnam
 		| otherwise => throw new TypeError "Invalid path #path"
 
 		[]+++funcs |> concat-map (<<< let orig = it.match
-			match: ->method in [\ANY it.method] and (orig ? reg~test<<(.pathname)) it
+			match: ->method in [\ANY it.method] and (orig ? reg~test<<(.pathname)) it<<<route:orig-path
 			carp: ->
 				values = (reg.exec it.pathname) ? []
 				it@params <<< if params? then tail values |> zip that |> list-to-obj else values
