@@ -17,11 +17,11 @@ module.exports = let routes = []
 			handle: (req,res)->(last)~>
 				vals = (reg.exec req.pathname) ? []
 				req@params <<< if params? then tail vals |> zip that |> list-to-obj else vals
-				it.sync req,res,last
+				if last.0 is escape then last else it.sync req,res,last
 		)<<(.async!) |> each routes~push
 
 	(require \http .create-server (req,res)->sync ->try start = Date.now!; end$ = res.end
-		res.end = ->console.log "#{res.status-code} #{req.url}: #{Date.now! - start}ms"; end$ ...
+		res <<< end:(->console.log "#{res.status-code} #{req.url}: #{Date.now! - start}ms"; end$ ...);
 		req <<< require \url .parse req.url,yes
 		fold (|>),"404 #{req.pathname}",[r.handle req,res for r in routes when r.match req] .pipe res
 	catch => res.end e.stack)

@@ -53,7 +53,11 @@
                   import$(req.params || (req.params = {}), (that = params) != null ? listToObj(
                   zip(that)(
                   tail(vals))) : vals);
-                  return it.sync(req, res, last);
+                  if (last[0] === escape) {
+                    return last;
+                  } else {
+                    return it.sync(req, res, last);
+                  }
                 };
               }
             });
