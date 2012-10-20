@@ -81,15 +81,15 @@
       'CONNECT': 'CONNECT',
       'HEAD': 'HEAD'
     }));
-    server = require('http').createServer(function(req, res){
-      return sync(function(now, end){
+    server = require('http').createServer(function(req, res, start, end$){
+      start == null && (start = Date.now());
+      end$ == null && (end$ = res.end);
+      return sync(function(){
         var r, e;
-        now == null && (now = Date.now());
-        end == null && (end = req.end);
         try {
           res.end = function(){
-            console.log(res.statusCode + " " + req.url + ": " + (Date.now() - now) + "ms");
-            return end.apply(this, arguments);
+            console.log(res.statusCode + " " + req.url + ": " + (Date.now() - start) + "ms");
+            return end$.apply(this, arguments);
           };
           import$(req, require('url').parse(req.url, true));
           return fold1(curry$(function(x$, y$){
