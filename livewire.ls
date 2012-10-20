@@ -17,7 +17,7 @@ module.exports = let routes = []
 			handle: (req,res)->(last)~>
 				vals = (reg.exec req.pathname) ? []
 				req@params <<< if params? then tail vals |> zip that |> list-to-obj else vals
-				if last.escape is escape then last else it.sync req,res,last
+				if last.escape is escape and it.unescape isnt unescape then last else it.sync req,res,last
 		)<<(.async!) |> each routes~push
 
 	(require \http .create-server (req,res)->sync ->try start = Date.now!; end$ = res.end
