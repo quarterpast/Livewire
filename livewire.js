@@ -1,10 +1,5 @@
 (function(){
   var sync, toString$ = {}.toString;
-    if (typeof window != 'undefined' && window !== null) {
-    prelude.installPrelude(window);
-  } else {
-    require('prelude-ls').installPrelude(global);
-  };
   sync = require('sync');
   String.prototype.pipe = Buffer.prototype.pipe = function(it){
     return it.end(this.constructor(this));
@@ -12,18 +7,16 @@
   module.exports = (function(routes){
     function respond(method){
       return function(path, funcs){
-        var origPath, params, reg;
+        var that, params, reg;
         reg = (function(){
-          switch (toString$.call(origPath = path).slice(8, -1)) {
+          switch (that = toString$.call(path).slice(8, -1)) {
           case 'String':
-            params = unfold(function(ident){
-              var that;
-              if (that = ident.exec(path)) {
-                path = path.replace(ident, '([^\\/]+)');
-                return [that[1], ident];
-              }
+            params = unfold(function(arg$){
+              var i, p;
+              i = arg$[0], p = arg$[1];
+              return [that[1], [i, path = p.replace(i, '([^\\/]+)')]];
             })(
-            /:([a-z$_][a-z0-9$_]*)/i);
+            [/:([a-z$_][a-z0-9$_]*)/i, path]);
             return RegExp("^" + path + "$", 'i');
           case 'RegExp':
             return path;

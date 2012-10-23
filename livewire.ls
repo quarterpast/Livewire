@@ -2,13 +2,12 @@ sync = require \sync; String::pipe = Buffer::pipe = (.end @constructor this)
 
 module.exports = let routes = []
 	function respond method then (path,funcs)->
-		reg = switch typeof! orig-path = path
+		reg = switch typeof! path
 		| \String =>
-			params = /:([a-z$_][a-z0-9$_]*)/i |> unfold (ident)->if ident.exec path
-				path .= replace ident, /([^\/]+)/$
-				[that.1,ident]
+			params = [/:([a-z$_][a-z0-9$_]*)/i,path] |> unfold ([ident,part])->
+				if ident.exec part then [that.1,[ident,part.replace ident, /([^\/]+)/$]] else path := part; null
 			RegExp "^#{path}$",\i
-		| \RegExp =>  path
+		| \RegExp => path
 		| \Function => test:path,exec:path
 		| otherwise => throw new TypeError "Invalid path #path"
 
