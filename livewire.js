@@ -42,18 +42,17 @@
                 return (method == 'ANY' || method == it.method) && reg.test(it.pathname);
               },
               handle: function(req, res){
-                var this$ = this;
+                var ref$, vals, that, this$ = this;
+                vals = (ref$ = reg.exec(req.pathname)) != null
+                  ? ref$
+                  : [];
+                import$(req.params || (req.params = {}), (that = params) != null ? listToObj(
+                zip(that)(
+                tail(vals))) : vals);
                 if (res.skip && !it.always) {
                   return id;
                 } else {
                   return function(last){
-                    var ref$, vals, that;
-                    vals = (ref$ = reg.exec(req.pathname)) != null
-                      ? ref$
-                      : [];
-                    import$(req.params || (req.params = {}), (that = params) != null ? listToObj(
-                    zip(that)(
-                    tail(vals))) : vals);
                     return it.sync(req, res, last);
                   };
                 }

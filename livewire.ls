@@ -13,10 +13,10 @@ module.exports = let routes = []
 
 		[]+++funcs |> concat-map (<<< do
 			match: ->method in [\ANY it.method] and reg.test it.pathname
-			handle: (req,res)->if res.skip and not it.always then id else (last)~>
+			handle: (req,res)->
 				vals = (reg.exec req.pathname) ? []
 				req@params <<< if params? then tail vals |> zip that |> list-to-obj else vals
-				it.sync req,res,last
+				if res.skip and not it.always then id else (last)~>it.sync req,res,last
 		)<<(.async!) |> each routes~push
 
 	(require \http .create-server (req,res)->sync ->try start = Date.now!; end$ = res.end
