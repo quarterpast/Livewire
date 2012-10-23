@@ -7,14 +7,19 @@
   module.exports = (function(routes){
     function respond(method){
       return function(path, funcs){
-        var that, params, reg;
+        var params, reg;
         reg = (function(){
-          switch (that = toString$.call(path).slice(8, -1)) {
+          switch (toString$.call(path).slice(8, -1)) {
           case 'String':
             params = unfold(function(arg$){
-              var i, p;
-              i = arg$[0], p = arg$[1];
-              return [that[1], [i, path = p.replace(i, '([^\\/]+)')]];
+              var ident, part, that;
+              ident = arg$[0], part = arg$[1];
+              if (that = ident.exec(part)) {
+                return [that[1], [ident, part.replace(ident, '([^\\/]+)')]];
+              } else {
+                path = part;
+                return null;
+              }
             })(
             [/:([a-z$_][a-z0-9$_]*)/i, path]);
             return RegExp("^" + path + "$", 'i');
@@ -38,20 +43,20 @@
               },
               handle: function(req, res){
                 var this$ = this;
-                return function(last){
-                  var ref$, vals, that;
-                  vals = (ref$ = reg.exec(req.pathname)) != null
-                    ? ref$
-                    : [];
-                  import$(req.params || (req.params = {}), (that = params) != null ? listToObj(
-                  zip(that)(
-                  tail(vals))) : vals);
-                  if (last.escape === escape && it.unescape !== unescape) {
-                    return last;
-                  } else {
+                if (res.skip && !it.always) {
+                  return id;
+                } else {
+                  return function(last){
+                    var ref$, vals, that;
+                    vals = (ref$ = reg.exec(req.pathname)) != null
+                      ? ref$
+                      : [];
+                    import$(req.params || (req.params = {}), (that = params) != null ? listToObj(
+                    zip(that)(
+                    tail(vals))) : vals);
                     return it.sync(req, res, last);
-                  }
-                };
+                  };
+                }
               }
             });
           }), function(it){
