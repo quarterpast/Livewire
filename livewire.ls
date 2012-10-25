@@ -1,6 +1,6 @@
 sync = require \sync; String::pipe = Buffer::pipe = (.end @constructor this)
 
-module.exports = let routes = []
+module.exports = (routes = [])->
 	function respond method then (path,funcs)->
 		reg = switch typeof! path
 		| \String =>
@@ -18,6 +18,7 @@ module.exports = let routes = []
 				req@params <<< if params? then tail vals |> zip that |> list-to-obj else vals
 				if res.skip and not it.always then id else (last)~>it.sync req,res,last
 		)<<(.async!) |> each routes~push
+		this
 
 	(require \http .create-server (req,res)->sync ->try start = Date.now!; end$ = res.end
 		res <<< end:(->console.log "#{res.status-code} #{req.url}: #{Date.now! - start}ms"; end$ ...);

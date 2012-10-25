@@ -4,7 +4,8 @@
   String.prototype.pipe = Buffer.prototype.pipe = function(it){
     return it.end(this.constructor(this));
   };
-  module.exports = (function(routes){
+  module.exports = function(routes){
+    routes == null && (routes = []);
     function respond(method){
       return function(path, funcs){
         var params, reg;
@@ -34,7 +35,7 @@
             throw new TypeError("Invalid path " + path);
           }
         }());
-        return each(bind$(routes, 'push'))(
+        each(bind$(routes, 'push'))(
         concatMap(compose$([
           (function(it){
             return import$(it, {
@@ -63,6 +64,7 @@
           }
         ]))(
         [].concat(funcs)));
+        return this;
       };
     }
     return import$(require('http').createServer(function(req, res){
@@ -111,7 +113,7 @@
         }, ref$));
       }
     }));
-  }.call(this, []));
+  };
   function bind$(obj, key, target){
     return function(){ return (target || obj)[key].apply(obj, arguments) };
   }
