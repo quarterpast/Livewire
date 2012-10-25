@@ -68,13 +68,17 @@
       };
     }
     return import$(require('http').createServer(function(req, res){
+      var this$ = this;
       return sync(function(){
-        var start, x$, end$, r, e;
+        var start, x$, end$, r, e, ref$;
         try {
           start = Date.now();
           return (x$ = end$ = res.end, res.end = function(){
-            console.log(res.statusCode + " " + req.url + ": " + (Date.now() - start) + "ms");
-            return end$.apply(this, arguments);
+            var ref$;
+            ((ref$ = this$.log) != null
+              ? ref$
+              : console.log)(res.statusCode + " " + req.url + ": " + (Date.now() - start) + "ms");
+            return end$.apply(this$, arguments);
           }, import$(req, require('url').parse(req.url, true)), fold(curry$(function(x$, y$){
             return y$(x$);
           }), "404 " + req.pathname, (function(){
@@ -89,7 +93,9 @@
           }())).pipe(res));
         } catch (e$) {
           e = e$;
-          return res.end(e.stack);
+          return ((ref$ = this$.log) != null
+            ? ref$
+            : res.end)(e.stack);
         }
       });
     }), map(respond, {
