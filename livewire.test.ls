@@ -1,6 +1,6 @@
 livewire = require "./livewire.ls"
 http = require \http
-describe = require \pavlov
+{expect,throws}:describe = require \pavlov
 get = require "../get"
 
 async = (.async!)
@@ -14,6 +14,8 @@ describe "Livewire" do
 			it is it.GET "/",(->)
 	"When we set a few routes"():
 		topic(): with livewire!
+			@log = id
+
 			@GET "/a/:b" ->"hello #{@params.b}"
 			@GET "/b/:c" [
 				->"hello #{@params.c}"
@@ -24,17 +26,17 @@ describe "Livewire" do
 			this
 
 		"params are filled in": ->
-			"hello world" is get "http://localhost:8000/a/world"
-			and "hello there" is get "http://localhost:8000/a/there"
+			get "http://localhost:8000/a/world" .body is "hello world"
+			and get "http://localhost:8000/a/there" .body is "hello there"
 
-		"chains are unwound": ->
-			"hello hello world" is get "http://localhost:8000/b/world"
+		"chains are unwound": expect "hello hello world" ->get "http://localhost:8000/b/world" .body
 
 		"regexes are executed": ->
-			"test things" is get "http://localhost:8000/test/things"
+			get "http://localhost:8000/test/things" .body is "test things"
 
 		"we get a 404 message"():
-			"404 /rsnt" is get "http://localhost:8000/rsnt"
+			with get "http://localhost:8000/rsnt"
+				@body is "404 /rsnt" and @res.status-code is 404
 
 		"and we can close the server"():
 			it.close!

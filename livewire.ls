@@ -15,15 +15,15 @@ module.exports = (routes = [])->
 			match: ->method in [\ANY it.method] and reg.test it.pathname
 			handle: (req,res)->
 				vals = (reg.exec req.pathname) ? []
-				req@params <<< if params? then tail vals |> zip that |> list-to-obj else vals
+				(req <<< status-code:200)@params <<< if params? then tail vals |> zip that |> list-to-obj else vals
 				if res.skip and not it.always then id else (last)~>it.sync req,res,last
 		)<<(.async!) |> each routes~push
 		this
 
-	(require \http .create-server (req,res)->sync ~>try start = Date.now!; end$ = res.end
-		res <<< end:(~>(@log ? console.log) "#{res.status-code} #{req.url}: #{Date.now! - start}ms"; end$ ...);
-		req <<< require \url .parse req.url,yes
+	(require \http .create-server (req,res)->sync ->try start = Date.now!; end$ = res.end
+		res <<< end:(-> console.log "#{res.status-code} #{req.url}: #{Date.now! - start}ms"; end$ ...);
+		req <<< require \url .parse req.url,yes <<< status-code:404
 		fold (|>),"404 #{req.pathname}",[r.handle req,res for r in routes when r.match req] .pipe res
-	catch => (@log ? res.end) e.stack)
+	catch => res.end e.stack)
 	<<< map respond,{\ANY \GET \POST \PUT \DELETE \OPTIONS \TRACE \CONNECT \HEAD}
 	<<< use: ->routes.push it.async!<<<match:(->yes),handle:(req,res)->(last)->it.sync req,res,last

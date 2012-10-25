@@ -47,7 +47,7 @@
                 vals = (ref$ = reg.exec(req.pathname)) != null
                   ? ref$
                   : [];
-                import$(req.params || (req.params = {}), (that = params) != null ? listToObj(
+                import$((ref$ = (req.statusCode = 200, req)).params || (ref$.params = {}), (that = params) != null ? listToObj(
                 zip(that)(
                 tail(vals))) : vals);
                 if (res.skip && !it.always) {
@@ -68,18 +68,14 @@
       };
     }
     return import$(require('http').createServer(function(req, res){
-      var this$ = this;
       return sync(function(){
-        var start, x$, end$, r, e, ref$;
+        var start, x$, end$, r, e;
         try {
           start = Date.now();
           return (x$ = end$ = res.end, res.end = function(){
-            var ref$;
-            ((ref$ = this$.log) != null
-              ? ref$
-              : console.log)(res.statusCode + " " + req.url + ": " + (Date.now() - start) + "ms");
-            return end$.apply(this$, arguments);
-          }, import$(req, require('url').parse(req.url, true)), fold(curry$(function(x$, y$){
+            console.log(res.statusCode + " " + req.url + ": " + (Date.now() - start) + "ms");
+            return end$.apply(this, arguments);
+          }, import$(req, require('url').parse(req.url, (true.statusCode = 404, true))), fold(curry$(function(x$, y$){
             return y$(x$);
           }), "404 " + req.pathname, (function(){
             var i$, ref$, len$, results$ = [];
@@ -93,9 +89,7 @@
           }())).pipe(res));
         } catch (e$) {
           e = e$;
-          return ((ref$ = this$.log) != null
-            ? ref$
-            : res.end)(e.stack);
+          return res.end(e.stack);
         }
       });
     }), map(respond, {
