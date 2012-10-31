@@ -1,7 +1,10 @@
-livewire = require "./livewire.ls"
-http = require \http
-{expect,throws}:describe = require \pavlov
-get = require "../get"
+require! {
+	livewire: "./livewire.ls"
+	describe: \pavlov
+	\http
+}
+
+{expect,throws,get} = describe
 
 async = (.async!)
 
