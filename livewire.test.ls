@@ -6,14 +6,14 @@ get = require "../get"
 async = (.async!)
 
 describe "Livewire" do
-	"Its router"():
+	"Its router":
 		topic: livewire!
-		"is an http.Server"(): it instanceof http.Server
+		"is an http.Server": -> it instanceof http.Server
 		"has some sugar methods": (topic)-> <[ANY GET POST PUT DELETE OPTIONS TRACE CONNECT HEAD]> |> all (in keys topic)
-		"which return the router"():
+		"which return the router": ->
 			it is it.GET "/",(->)
-	"When we set a few routes"():
-		topic(): with livewire!
+	"When we set a few routes":
+		topic: -> let this = livewire!
 			@log = id
 
 			@GET "/a/:b" ->"hello #{@params.b}"
@@ -34,11 +34,11 @@ describe "Livewire" do
 		"regexes are executed": ->
 			get "http://localhost:8000/test/things" .body is "test things"
 
-		"we get a 404 message"():
-			with get "http://localhost:8000/rsnt"
+		"we get a 404 message": ->
+			let this = get "http://localhost:8000/rsnt"
 				@body is "404 /rsnt" and @res.status-code is 404
 
-		"and we can close the server"():
+		"and we can close the server": ->
 			it.close!
 
 .run!
