@@ -1,14 +1,16 @@
 (function(){
-  var sync, toString$ = {}.toString;
+  var sync, http, url, toString$ = {}.toString;
   sync = require('sync');
+  http = require('http');
+  url = require('url');
   String.prototype.pipe = Buffer.prototype.pipe = function(it){
     return it.end(this.constructor(this));
   };
   module.exports = function(routes){
     routes == null && (routes = []);
-    function respond(method){
+    function route(method){
       return function(path, funcs){
-        var params, reg;
+        var reg, params;
         reg = (function(){
           switch (toString$.call(path).slice(8, -1)) {
           case 'String':
@@ -43,7 +45,7 @@
                 return (method == 'ANY' || method == it.method) && reg.test(it.pathname);
               },
               handle: function(req, res){
-                var ref$, vals, that, this$ = this;
+                var vals, ref$, that, this$ = this;
                 vals = (ref$ = reg.exec(req.pathname)) != null
                   ? ref$
                   : [];
@@ -67,15 +69,16 @@
         return this;
       };
     }
-    return import$(require('http').createServer(function(req, res){
-      return sync(function(){
-        var start, x$, end$, r, e;
-        try {
-          start = Date.now();
-          return (x$ = end$ = res.end, res.end = function(){
+    return import$(http.createServer(function(req, res){
+      return sync(function fiber(){
+        return (function(start, end$){
+          var r;
+          res.end = function(){
             console.log(res.statusCode + " " + req.url + ": " + (Date.now() - start) + "ms");
             return end$.apply(this, arguments);
-          }, import$(req, require('url').parse(req.url, (true.statusCode = 404, true))), fold(curry$(function(x$, y$){
+          };
+          import$(req, url.parse(req.url, true)).statusCode = 404;
+          return fold(curry$(function(x$, y$){
             return y$(x$);
           }), "404 " + req.pathname, (function(){
             var i$, ref$, len$, results$ = [];
@@ -86,13 +89,14 @@
               }
             }
             return results$;
-          }())).pipe(res));
-        } catch (e$) {
-          e = e$;
-          return res.end(e.stack);
+          }())).pipe(res);
+        }.call(this, Date.now(), res.end));
+      }, function error(it){
+        if (it != null) {
+          return (res.statusCode = 500, res).end(it.stack);
         }
       });
-    }), map(respond, {
+    }), map(route, {
       'ANY': 'ANY',
       'GET': 'GET',
       'POST': 'POST',

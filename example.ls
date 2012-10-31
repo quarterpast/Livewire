@@ -1,4 +1,4 @@
-with do require "./livewire.ls"
+let this = do require "./livewire.ls"
 	@GET "/" ->"hello world"
 	@GET "/:name" [
 		->"hello #{@params.name}"
