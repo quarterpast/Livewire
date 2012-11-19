@@ -73,8 +73,12 @@
     return import$(http.createServer(function(req, res){
       var error;
       error = function(it){
+        var ref$;
         if (it != null) {
-          return (res.statusCode = 500, res).end();
+          (res.statusCode = 500, res).end();
+          return console.log((ref$ = it.stack) != null
+            ? ref$
+            : it.toString());
         }
       };
       return sync(function fiber(){
