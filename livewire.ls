@@ -1,4 +1,6 @@
-require! [sync,http,url]; String::pipe = Buffer::pipe = (.end @constructor this)
+require! [sync,http,url]
+String::pipe = Buffer::pipe = (.end @constructor this)
+String::on = Buffer::on = ->@
 
 module.exports = (routes = [])->
 	function route method then (path,funcs)->
@@ -20,11 +22,13 @@ module.exports = (routes = [])->
 		)<<(.async!) |> each routes~push
 		this
 
-	(http.create-server (req,res)->sync do
-		:fiber -> let start = Date.now!, end$ = (res <<< status-code:404).end
-			res.end = -> console.log "#{res.status-code} #{req.url}: #{Date.now! - start}ms"; end$ ...
-			req <<< url.parse req.url,yes
-			fold (|>),"404 #{req.pathname}",[r.handle req,res for r in routes when r.match req] .pipe res
-		:error -> (res <<< status-code:500)end it.stack if it?
+	(http.create-server (req,res)->
+		error = ->if it? => (res <<< status-code:500)end! ; console.log it.stack
+		sync do
+			:fiber -> let start = Date.now!, end$ = (res <<< status-code:404).end
+				res.end = -> console.log "#{res.status-code} #{req.url}: #{Date.now! - start}ms"; end$ ...
+				req <<< url.parse req.url,yes
+				fold (|>),"404 #{req.pathname}",[r.handle req,res for r in routes when r.match req] .on \error error .pipe res
+			error
 	)<<< map route,{\ANY \GET \POST \PUT \DELETE \OPTIONS \TRACE \CONNECT \HEAD}
 	<<< use: ->routes.push it.async!<<<match:(->yes),handle:(req,res)->(last)->it.sync req,res,last

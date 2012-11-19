@@ -6,6 +6,9 @@
   String.prototype.pipe = Buffer.prototype.pipe = function(it){
     return it.end(this.constructor(this));
   };
+  String.prototype.on = Buffer.prototype.on = function(){
+    return this;
+  };
   module.exports = function(routes){
     routes == null && (routes = []);
     function route(method){
@@ -49,14 +52,14 @@
                 vals = (ref$ = reg.exec(req.pathname)) != null
                   ? ref$
                   : [];
-                import$((ref$ = (req.statusCode = 200, req)).params || (ref$.params = {}), (that = params) != null ? listToObj(
+                import$(req.params || (req.params = {}), (that = params) != null ? listToObj(
                 zip(that)(
                 tail(vals))) : vals);
                 if (res.skip && !it.always) {
                   return id;
                 } else {
                   return function(last){
-                    return it.sync(req, res, last);
+                    return it.sync(req, (res.statusCode = 200, res), last);
                   };
                 }
               }
@@ -70,6 +73,13 @@
       };
     }
     return import$(http.createServer(function(req, res){
+      var error;
+      error = function(it){
+        if (it != null) {
+          (res.statusCode = 500, res).end();
+          return console.log(it.stack);
+        }
+      };
       return sync(function fiber(){
         return (function(start, end$){
           var r;
@@ -77,7 +87,7 @@
             console.log(res.statusCode + " " + req.url + ": " + (Date.now() - start) + "ms");
             return end$.apply(this, arguments);
           };
-          import$(req, url.parse(req.url, true)).statusCode = 404;
+          import$(req, url.parse(req.url, true));
           return fold(curry$(function(x$, y$){
             return y$(x$);
           }), "404 " + req.pathname, (function(){
@@ -89,13 +99,9 @@
               }
             }
             return results$;
-          }())).pipe(res);
-        }.call(this, Date.now(), res.end));
-      }, function error(it){
-        if (it != null) {
-          return (res.statusCode = 500, res).end(it.stack);
-        }
-      });
+          }())).on('error', error).pipe(res);
+        }.call(this, Date.now(), (res.statusCode = 404, res).end));
+      }, error);
     }), map(route, {
       'ANY': 'ANY',
       'GET': 'GET',
