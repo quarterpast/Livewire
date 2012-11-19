@@ -26,7 +26,8 @@ module.exports = (routes = [])->
 		this
 
 	(http.create-server (req,res)->
-		error = ->if it? => (res <<< status-code:500)end! ; console.log it.stack
+		error = ->if it?
+			(res <<< status-code:500)end! ; console.log it.stack ? it.to-string!
 		sync do
 			:fiber -> let start = Date.now!, end$ = (res <<< status-code:404).end
 				res.end = -> console.log "#{res.status-code} #{req.url}: #{Date.now! - start}ms"; end$ ...

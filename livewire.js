@@ -74,8 +74,7 @@
       var error;
       error = function(it){
         if (it != null) {
-          (res.statusCode = 500, res).end();
-          return console.log(it.stack);
+          return (res.statusCode = 500, res).end();
         }
       };
       return sync(function fiber(){
