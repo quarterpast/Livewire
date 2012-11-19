@@ -1,5 +1,5 @@
 (function(){
-  var sync, http, url, toString$ = {}.toString;
+  var sync, http, url, toString$ = {}.toString, slice$ = [].slice;
   sync = require('sync');
   http = require('http');
   url = require('url');
@@ -13,22 +13,19 @@
     routes == null && (routes = []);
     function route(method){
       return function(path, funcs){
-        var reg, params;
+        var params, reg;
+        params = [];
         reg = (function(){
           switch (toString$.call(path).slice(8, -1)) {
           case 'String':
-            params = unfold(function(arg$){
-              var ident, part, that;
-              ident = arg$[0], part = arg$[1];
-              if (that = ident.exec(part)) {
-                return [that[1], [ident, part.replace(ident, '([^\\/]+)')]];
-              } else {
-                path = part;
-                return null;
-              }
-            })(
-            [/:([a-z$_][a-z0-9$_]*)/i, path]);
-            return RegExp("^" + path + "$", 'i');
+            return partialize$(RegExp, [void 8, 'i'], [0])(
+            function(it){
+              return ("^" + it) + ('/' === last(path) ? '' : '$');
+            }(
+            path.replace(/:([a-z$_][a-z0-9$_]*)/i, function(m, param){
+              params.push(param);
+              return '([^\\/]+)';
+            })));
           case 'RegExp':
             return path;
           case 'Function':
@@ -52,6 +49,7 @@
                 vals = (ref$ = reg.exec(req.pathname)) != null
                   ? ref$
                   : [];
+                req.route = path;
                 import$(req.params || (req.params = {}), (that = params) != null ? listToObj(
                 zip(that)(
                 tail(vals))) : vals);
@@ -124,6 +122,15 @@
       }
     }));
   };
+  function partialize$(f, args, where){
+    return function(){
+      var params = slice$.call(arguments), i,
+          len = params.length, wlen = where.length,
+          ta = args ? args.concat() : [], tw = where ? where.concat() : [];
+      for(i = 0; i < len; ++i) { ta[tw[0]] = params[i]; tw.shift(); }
+      return len < wlen && len ? partialize$(f, ta, tw) : f.apply(this, ta);
+    };
+  }
   function bind$(obj, key, target){
     return function(){ return (target || obj)[key].apply(obj, arguments) };
   }

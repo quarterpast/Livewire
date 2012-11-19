@@ -4,11 +4,13 @@ String::on = Buffer::on = ->@
 
 module.exports = (routes = [])->
 	function route method then (path,funcs)->
+		params = []
 		reg = switch typeof! path
 		| \String =>
-			params = [/:([a-z$_][a-z0-9$_]*)/i,path] |> unfold ([ident,part])->
-				if ident.exec part then [that.1,[ident,part.replace ident, /([^\/]+)/$]] else path := part; null
-			RegExp "^#{path}$",\i
+			path.replace /:([a-z$_][a-z0-9$_]*)/i (m,param)->
+				params.push param; /([^\/]+)/$
+			|> ->"^#{it}"+(if '/' is last path then '' else \$)
+			|> RegExp _,\i
 		| \RegExp => path
 		| \Function => test:path,exec:path
 		| otherwise => throw new TypeError "Invalid path #path"
@@ -17,6 +19,7 @@ module.exports = (routes = [])->
 			match: ->method in [\ANY it.method] and reg.test it.pathname
 			handle: (req,res)->
 				vals = (reg.exec req.pathname) ? []
+				req.route = path
 				req{}params <<< if params? then tail vals |> zip that |> list-to-obj else vals
 				if res.skip and not it.always then id else (last)~>it.sync req,(res<<<status-code:200),last
 		)<<(.async!) |> each routes~push
