@@ -10,7 +10,6 @@ class exports.PathMatcher
 	match:  ->throw TypeError "#{@constructor.display-name} does not implement match"
 	extend: ->throw TypeError "#{@constructor.display-name} does not implement extend"
 
-
 class StringMatcher extends PathMatcher
 	@handles = (instanceof String)
 	(path)->
@@ -44,7 +43,6 @@ class AlwaysMatcher extends PathMatcher
 	@handles = (is true)
 	match:   -> yes
 	extract: -> {}
-
 
 class exports.Request
 	params: {}
