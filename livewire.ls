@@ -1,4 +1,8 @@
 require! [sync,url]
+
+String::pipe = (.end @constructor this)
+Buffer::pipe = (.end this)
+
 class exports.PathMatcher
 	->
 	@extended = @[]subclasses~push
@@ -11,7 +15,7 @@ class exports.PathMatcher
 	extend: ->throw TypeError "#{@constructor.display-name} does not implement extend"
 
 class StringMatcher extends PathMatcher
-	@handles = (instanceof String)
+	@handles = (typeof)>>(is \string)
 	(path)->
 		@params = []
 		@reg = path.replace /:([a-z$_][a-z0-9$_]*)/i (m,param)~>
@@ -56,7 +60,7 @@ class exports.Response
 class exports.Route
 	@routes = []
 
-	@error = (err)->
+	@error = (res,err)-->
 		if err?
 			res.status-code = 500
 			res.end!
@@ -71,7 +75,7 @@ class exports.Route
 			@@routes.push this
 
 for method of {\ANY \GET \POST \PUT \DELETE \OPTIONS \TRACE \CONNECT \HEAD}
-	exports[method] = (path,funcs)~>Route it,path,funcs
+	exports[method] = (path,funcs)~>Route method,path,funcs
 
 exports.use = -> Route \ANY true, it
 
@@ -79,11 +83,19 @@ exports.use ->
 	@status-code = 404
 	"404 #{@pathname}"
 
-module.exports = (req,res)->
+exports.app = (req,res)->
 	sync ~>
-		req = Request  req # augment!
-		res = Response res
+		try
+			aug-req = Request  req
 
-		fold1 (|>) <| for route in Route.routes when route.match req
-			req.params import route.extract req
-			-> @func.sync req,res,it
+			tap = (fn,a)-->fn a; a
+
+			for route in Route.routes when route.matcher.match aug-req
+				aug-req.params import route.matcher.extract aug-req
+				-> route.func.sync aug-req,(Response res),it
+			|> tap console.log
+			|> fold1 (|>)
+			|> (.pipe aug-res)
+			|> (.on \error Route.error res)
+		catch
+			Route.error res,e
