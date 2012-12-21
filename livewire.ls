@@ -1,4 +1,4 @@
-require! [sync,http,url]
+require! [sync,url]
 class exports.PathMatcher
 	->
 	@extended = @[]subclasses~push
