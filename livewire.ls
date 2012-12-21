@@ -1,38 +1,79 @@
 require! [sync,http,url]
-String::pipe = Buffer::pipe = (.end @constructor this)
-String::on = Buffer::on = ->@
 
-module.exports = (routes = [])->
-	function route method then (path,funcs)->
-		params = []
-		reg = switch typeof! path
-		| \String =>
-			path.replace /:([a-z$_][a-z0-9$_]*)/i (m,param)->
-				params.push param; /([^\/]+)/$
-			|> ->"^#{it}"+(if '/' is last path then '' else \$)
-			|> RegExp _,\i
-		| \RegExp => path
-		| \Function => test:path,exec:path
-		| otherwise => throw new TypeError "Invalid path #path"
+class exports.PathMatcher
+	-> ... #abstract
+	@extended = @[]subclasses~push
+	@create = (pathspec)-->
+		if find (.handles pathspec), @subclasses
+			new that pathspec
+		else throw TypeError "No routers can handle #pathspec"
 
-		[]+++funcs |> concat-map (<<< do
-			match: ->method in [\ANY it.method] and reg.test it.pathname
-			handle: (req,res)->
-				vals = (reg.exec req.pathname) ? []
-				req.route = path
-				req{}params <<< if params? then tail vals |> zip that |> list-to-obj else vals
-				if res.skip and not it.always then id else (last)~>it.sync req,(res<<<status-code:200),last
-		)<<(.async!) |> each routes~push
-		this
 
-	(http.create-server (req,res)->
-		error = ->if it?
-			(res <<< status-code:500)end! ; console.log it.stack ? it.to-string!
-		sync do
-			:fiber -> let start = Date.now!, end$ = (res <<< status-code:404).end
-				res.end = -> console.log "#{res.status-code} #{req.url}: #{Date.now! - start}ms"; end$ ...
-				req <<< url.parse req.url,yes
-				fold (|>),"404 #{req.pathname}",[r.handle req,res for r in routes when r.match req] .on \error error .pipe res
-			error
-	)<<< map route,{\ANY \GET \POST \PUT \DELETE \OPTIONS \TRACE \CONNECT \HEAD}
-	<<< use: ->routes.push it.async!<<<match:(->yes),handle:(req,res)->(last)->it.sync req,res,last
+class StringMatcher extends PathMatcher
+	@handles = (instanceof String)
+
+	(path)->
+		@params = []
+		@reg = path.replace /:([a-z$_][a-z0-9$_]*)/i (m,param)~>
+			@params.push param
+			/([^\/]+)/$
+		|> ->"^#{it}"+(if '/' is last path then '' else \$)
+		|> RegExp _,\i
+
+	match: (req)->@reg.test req.pathname
+
+	extract: (req)->
+		(@reg.exec req.pathname) ? []
+		|> tail
+		|> zip @params
+		|> list-to-obj
+
+class AlwaysMatcher extends PathMatcher
+	class @spec then ~>
+	@handles = (instanceof @spec)
+
+	match:   -> yes
+	extract: -> {}
+
+
+class exports.Request
+	(req)->
+		import req
+		import url.parse req.url,yes
+
+class exports.Response
+	(res)->import res
+
+class exports.Route
+	@routes = []
+
+	@error = (err)->
+		if err?
+			res.status-code = 500
+			res.end!
+
+			console.error err.stack ? err.to-string!
+
+	@serve = (req,res)->
+		sync ~>
+			req = new Request  req # augment!
+			res = new Response res
+
+			for route in @@routes when route.match req
+				route.extract req
+
+
+	(@method,pathspec,@func)~>
+		@matcher = PathMatcher.create pathspec
+		@@routes.push this
+
+
+
+for method of {\ANY \GET \POST \PUT \DELETE \OPTIONS \TRACE \CONNECT \HEAD}
+	exports[method] = (path,funcs)~>Route it,path,funcs
+
+exports.use = -> Route \ANY AlwaysMatcher.spec!, it
+
+exports.use ->
+	@status-code = 404
+	"404 #{@pathname}"
