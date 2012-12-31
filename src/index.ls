@@ -31,16 +31,16 @@ export function app req,res
 		try
 			aug-req = Request req
 
-			fns = for route in Route.route req then let aug-req,res
+			fns = for route in Router.route req then let aug-req,res
 				aug-req.params import route.extract aug-req
 				->route.func.sync aug-req,(Response res),it
 
 			fns
 			|> fold (<|),"404 #{req.pathname}"
 			|> (.pipe aug-res)
-			|> (.on \error Route.error res)
+			|> (.on \error Router.error res)
 		catch
-			Route.error res,e
+			Router.error res,e
 
 [\ANY \GET \POST \PUT \DELETE \OPTIONS \TRACE \CONNECT \HEAD] |> each (method)->
 	exports[method] = (...spec)~>Router.create method,...spec
