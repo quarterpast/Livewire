@@ -9,5 +9,5 @@ export class MatcherRouter extends Router implements delegate <[match extract]> 
 	@supports = (spec)->
 		spec instanceof Matcher or any (.supports spec), Matcher.subclasses
 	handlers: ->[@handler]
-	constructor$$: instance-tracker (@matcher,@handler)~>
+	constructor$$: instance-tracker.call @,(@matcher,@handler)~>
 		if matcher not instanceof Matcher then @matcher = Matcher.create matcher

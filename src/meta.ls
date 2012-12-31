@@ -3,10 +3,10 @@ require! [fs,path,callsite]
 export function delegate methods,unto
 	methods |> map ((method)->(method): ->@[unto][method] ...) |> fold1 (import)
 
-export instance-tracker = (constr)->->
-	obj = constr ...
-	@constructor[]instances.push obj
-	obj
+export instance-tracker = (constr)->~>
+	constr ...
+		@[]instances.push ..
+		..
 
 export require-all = (dir)->
 	dir = __stack.1.get-file-name!
