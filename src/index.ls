@@ -23,11 +23,11 @@ export class Response
 		for k,v of res
 			@[k] = if v instanceof Function then v.bind res else v
 
-# exports.use = -> Route \ANY true, it
+exports.use = -> Router.create \ANY true, it
 
-# exports.use ->
-# 	@status-code = 404
-# 	"404 #{@pathname}"
+exports.use ->
+	@status-code = 404
+	"404 #{@pathname}"
 
 export function app req,res
 #	sync ~>
@@ -39,7 +39,7 @@ export function app req,res
 			Router.route augs.req
 			|> each (.extract augs.req)>>(augs.req.params import)
 			|> concat-map (.handlers!)>>map (func)->->func.call augs.req,augs.res,it
-			|> fold (|>),"404 #{augs.req.pathname}"
+			|> fold (|>),""
 			|> (.pipe augs.res)
 			|> (.on \error Router.error augs.res)
 		catch
