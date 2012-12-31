@@ -15,16 +15,13 @@ class exports.Response
 
 class exports.Router
 	@subclasses = []
-	@extended = (subclass)->
-		@subclasses.push ->
-			subclass[]instances.push this # lol wrap constructors i'm so dirty
-			subclass ...
+	@extended = @subclasses~push
 
 	#create :: Method -> ...Stuff -> Maybe Route
 	@create = (method, ...spec)->
-		if find (.supports ...spec), @subclasses
-			new that method,...spec
-		else throw TypeError "No routers can handle #{spec}."
+		if find (.supports? ...spec), @subclasses
+			that method,...spec
+		else throw new TypeError "No routers can handle #{spec}."
 
 	#route :: Request -> List Function
 	@route = (req)->
@@ -38,46 +35,60 @@ class exports.Router
 
 			console.error err.stack ? err.to-string!
 
-	@find = (req)-> # default impl, override me plz (or implement .handler)
+	@find = (req)-> # default impl, override me plz (or implement .handlers)
 		filter (.match req), @instances
 		|> concat-map (.handlers!)
 
 	match:  ->
-		throw TypeError "#{@constructor.display-name} does not implement match"
+		throw new TypeError "#{@constructor.display-name} does not implement match"
 	handlers: ->
-		throw TypeError "#{@constructor.display-name} does not implement handlers"
+		throw new TypeError "#{@constructor.display-name} does not implement handlers"
 	extract: ->
-		throw TypeError "#{@constructor.display-name} does not implement extract"
-
+		throw new TypeError "#{@constructor.display-name} does not implement extract"
 	~>
-		throw "#{@constructor.display-name} is abstract and can't be instantiated."
+		throw new TypeError "#{@constructor.display-name} is abstract and can't be instantiated."
 
 function delegate methods,unto
-	{[method, ->@[unto][method] ...] for method in methods}
+	methods |> map ((method)->(method): ->@[unto][method] ...) |> fold1 (import)
 
-class MatcherRouter implements delegate <[match extract]> \matcher extends Router
-	@supports = (instanceof Matcher)
-	# match:    ->@matcher.match it
-	# extract:  ->@matcher.extract it
+instance-tracker = (constr)->->
+	obj = constr ...
+	@constructor[]instances.push obj
+	obj
+
+class MatcherRouter extends Router implements delegate <[match extract]> \matcher
+	@supports = (spec)->
+		spec instanceof Matcher or any (.supports spec), Matcher.subclasses
 	handlers: ->[@handler]
-	(@matcher,@handler)->
+	constructor$$: instance-tracker (@matcher,@handler)~>
+		if matcher not instanceof Matcher then @matcher = Matcher.create matcher
 
 class Matcher
+	@subclasses = []
+	@extended = @subclasses~push
+
+	@create = (spec)->
+		if find (.supports spec), @subclasses
+			that spec
+		else throw new TypeError "No matchers can handle #{spec}."
+
 	~>
-		throw "#{@constructor.display-name} is abstract and can't be instantiated."
+		throw new TypeError "#{@constructor.display-name} is abstract and can't be instantiated."
 	match:  ->
-		throw TypeError "#{@constructor.display-name} does not implement match"
+		throw new TypeError "#{@constructor.display-name} does not implement match"
 	extract: ->
-		throw TypeError "#{@constructor.display-name} does not implement extract"
+		throw new TypeError "#{@constructor.display-name} does not implement extract"
 
 class StringMatcher extends Matcher
-	(@method,@path,@handler)~>
+	(@path)~>
 		@params = []
 		@reg = path.replace /:([a-z$_][a-z0-9$_]*)/i (m,param)~>
 			@params.push param
 			/([^\/]+)/$
 		|> ->"^#{it}"+(if '/' is last path then '' else \$)
 		|> RegExp _,\i
+
+	@supports = ->typeof it is \string
 
 	#match :: Request -> Boolean
 	match: (req)->@reg.test req.pathname
@@ -89,6 +100,8 @@ class StringMatcher extends Matcher
 		|> zip @params
 		|> list-to-obj
 
+[\ANY \GET \POST \PUT \DELETE \OPTIONS \TRACE \CONNECT \HEAD] |> each (method)->
+	exports[method] = (...spec)~>Router.create method,...spec
 
 # exports.use = -> Route \ANY true, it
 

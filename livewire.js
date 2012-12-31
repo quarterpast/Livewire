@@ -1,5 +1,5 @@
 (function(){
-  var sync, url, Request, Response, Router, MatcherRouter, Matcher, StringMatcher, slice$ = [].slice;
+  var sync, url, Request, Response, Router, instanceTracker, MatcherRouter, Matcher, StringMatcher, slice$ = [].slice;
   sync = require('sync');
   url = require('url');
   String.prototype.pipe = function(it){
@@ -35,24 +35,17 @@
     var prototype = Router.prototype, constructor = Router;
     Router.subclasses = [];
     Router.extended = function(subclass){
-      return this.subclasses.push(function(){
-        (subclass.instances || (subclass.instances = [])).push(this);
-        return subclass.apply(this, arguments);
-      });
+      return this.subclasses.push(subclass);
     };
     Router.create = function(method){
       var spec, that;
       spec = slice$.call(arguments, 1);
       if (that = find(function(it){
-        return it.supports.apply(it, spec);
+        return typeof it.supports === 'function' ? it.supports.apply(null, spec) : void 8;
       }, this.subclasses)) {
-        return (function(func, args, ctor) {
-          ctor.prototype = func.prototype;
-          var child = new ctor, result = func.apply(child, args), t;
-          return (t = typeof result)  == "object" || t == "function" ? result || child : child;
-  })(that, [method].concat(slice$.call(spec)), function(){});
+        return that.apply(null, [method].concat(slice$.call(spec)));
       } else {
-        throw TypeError("No routers can handle " + spec + ".");
+        throw new TypeError("No routers can handle " + spec + ".");
       }
     };
     Router.route = function(req){
@@ -79,17 +72,17 @@
       }, this.instances));
     };
     prototype.match = function(){
-      throw TypeError(this.constructor.displayName + " does not implement match");
+      throw new TypeError(this.constructor.displayName + " does not implement match");
     };
     prototype.handlers = function(){
-      throw TypeError(this.constructor.displayName + " does not implement handlers");
+      throw new TypeError(this.constructor.displayName + " does not implement handlers");
     };
     prototype.extract = function(){
-      throw TypeError(this.constructor.displayName + " does not implement extract");
+      throw new TypeError(this.constructor.displayName + " does not implement extract");
     };
     function Router(){
       var this$ = this instanceof ctor$ ? this : new ctor$;
-      throw this$.constructor.displayName + " is abstract and can't be instantiated.";
+      throw new TypeError(this$.constructor.displayName + " is abstract and can't be instantiated.");
       return this$;
     } function ctor$(){} ctor$.prototype = prototype;
     return Router;
@@ -105,35 +98,61 @@
       return this[unto][method].apply(this, arguments);
     }
   }
-  MatcherRouter = (function(){
-    MatcherRouter.displayName = 'MatcherRouter';
-    var prototype = MatcherRouter.prototype, constructor = MatcherRouter;
-    importAll$(prototype, arguments[0]);
-    MatcherRouter.supports = (function(it){
-      return it instanceof Matcher;
-    });
+  instanceTracker = function(constr){
+    return function(){
+      var obj, ref$;
+      obj = constr.apply(this, arguments);
+      ((ref$ = this.constructor).instances || (ref$.instances = [])).push(obj);
+      return obj;
+    };
+  };
+  MatcherRouter = (function(superclass){
+    var constructor$$, prototype = extend$((import$(MatcherRouter, superclass).displayName = 'MatcherRouter', MatcherRouter), superclass).prototype, constructor = MatcherRouter;
+    function MatcherRouter(){
+      return constructor$$.apply(this, arguments);
+    }
+    MatcherRouter.supports = function(spec){
+      return spec instanceof Matcher || any(function(it){
+        return it.supports(spec);
+      }, Matcher.subclasses);
+    };
     prototype.handlers = function(){
       return [this.handler];
     };
-    function MatcherRouter(matcher, handler){
-      this.matcher = matcher;
-      this.handler = handler;
-    }
+    constructor$$ = instanceTracker(function(matcher, handler){
+      MatcherRouter.matcher = matcher;
+      MatcherRouter.handler = handler;
+      if (!(matcher instanceof Matcher)) {
+        return MatcherRouter.matcher = Matcher.create(matcher);
+      }
+    });
     return MatcherRouter;
-  }(delegate(['match', 'extract'], extend$('matcher', Router))));
+  }(Router));
   Matcher = (function(){
     Matcher.displayName = 'Matcher';
     var prototype = Matcher.prototype, constructor = Matcher;
+    Matcher.subclasses = [];
+    Matcher.extended = bind$(Matcher.subclasses, 'push');
+    Matcher.create = function(spec){
+      var that;
+      if (that = find(function(it){
+        return it.supports(spec);
+      }, this.subclasses)) {
+        return that(spec);
+      } else {
+        throw new TypeError("No matchers can handle " + spec + ".");
+      }
+    };
     function Matcher(){
       var this$ = this instanceof ctor$ ? this : new ctor$;
-      throw this$.constructor.displayName + " is abstract and can't be instantiated.";
+      throw new TypeError(this$.constructor.displayName + " is abstract and can't be instantiated.");
       return this$;
     } function ctor$(){} ctor$.prototype = prototype;
     prototype.match = function(){
-      throw TypeError(this.constructor.displayName + " does not implement match");
+      throw new TypeError(this.constructor.displayName + " does not implement match");
     };
     prototype.extract = function(){
-      throw TypeError(this.constructor.displayName + " does not implement extract");
+      throw new TypeError(this.constructor.displayName + " does not implement extract");
     };
     return Matcher;
   }());
@@ -155,6 +174,9 @@
       })));
       return this$;
     } function ctor$(){} ctor$.prototype = prototype;
+    StringMatcher.supports = function(it){
+      return typeof it === 'string';
+    };
     prototype.match = function(req){
       return this.reg.test(req.pathname);
     };
@@ -169,6 +191,15 @@
     };
     return StringMatcher;
   }(Matcher));
+  each(function(method){
+    var this$ = this;
+    return exports[method] = function(){
+      var spec;
+      spec = slice$.call(arguments);
+      return Router.create.apply(Router, [method].concat(slice$.call(spec)));
+    };
+  })(
+  ['ANY', 'GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'TRACE', 'CONNECT', 'HEAD']);
   exports.app = function(req, res){
     var this$ = this;
     return sync(function(){
@@ -219,15 +250,14 @@
         curry$.call(this, f, params) : f.apply(this, params);
     } : f;
   }
-  function importAll$(obj, src){
-    for (var key in src) obj[key] = src[key];
-    return obj;
-  }
   function extend$(sub, sup){
     function fun(){} fun.prototype = (sub.superclass = sup).prototype;
     (sub.prototype = new fun).constructor = sub;
     if (typeof sup.extended == 'function') sup.extended(sub);
     return sub;
+  }
+  function bind$(obj, key, target){
+    return function(){ return (target || obj)[key].apply(obj, arguments) };
   }
   function partialize$(f, args, where){
     return function(){
