@@ -6,7 +6,7 @@ Livewire = require "./src"
 		->"hello #{&1}"
 	]
 	..GET /^\/test\/(\w+)/, ->"test #{@params.0}"
-	..GET (->if it.split '/' .1 is 'other' then a:"hello" else false), ->"other #{@params.a}"
+	..GET (->if it.pathname.split '/' .1 is 'other' then a:"hello" else false), ->"other #{@params.a}"
 
 port = process.env.PORT ? 8000
 

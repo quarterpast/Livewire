@@ -36,16 +36,14 @@ export function app req,res
 				req: Request req
 				res: Response res
 
-			fns = for route in Router.route req then let augs.req,res
-				augs.req.params import route.extract augs.req
-				->route.func.call augs.req,res,it
-
-			fns
-			|> fold (<|),"404 #{augs.req.pathname}"
-			|> (.pipe res)
-			|> (.on \error Router.error res)
+			Router.route augs.req
+			|> each (.extract augs.req)>>(augs.req.params import)
+			|> concat-map (.handlers!)>>map (func)->->func.call augs.req,augs.res,it
+			|> fold (|>),"404 #{augs.req.pathname}"
+			|> (.pipe augs.res)
+			|> (.on \error Router.error augs.res)
 		catch
-			Router.error res,e
+			Router.error augs.res,e
 
 [\ANY \GET \POST \PUT \DELETE \OPTIONS \TRACE \CONNECT \HEAD] |> each (method)->
 	exports[method] = (...spec)~>Router.create method,...spec

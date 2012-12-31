@@ -12,7 +12,8 @@ export class StringMatcher extends Matcher
 	@supports = ->typeof it is \string
 
 	#match :: Request -> Boolean
-	match: (req)->@reg.test req.pathname
+	match: (req)->
+		@reg.test req.pathname
 
 	#extract :: Request -> Map String Any
 	extract: (req)->
