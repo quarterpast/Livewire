@@ -6,5 +6,17 @@
   "dependencies": {
     "sync": "~0.2.1",
     "prelude-ls": "~0.6.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/quarterto/Livewire.git"
+  },
+  "author": "Matt Brennan <matt.brennan@import.io>",
+  "homepage": "http://github.com/quarterto/Livewire/",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/quarterto/Livewire/blob/master/licence.md"
+    }
+  ],
 }
