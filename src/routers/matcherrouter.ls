@@ -1,5 +1,6 @@
 require! {
 	"../router".Router
+	"../matcher".Matcher
 	"../meta".delegate
 	"../meta".instance-tracker
 }
@@ -10,4 +11,3 @@ export class MatcherRouter extends Router implements delegate <[match extract]> 
 	handlers: ->[@handler]
 	constructor$$: instance-tracker (@matcher,@handler)~>
 		if matcher not instanceof Matcher then @matcher = Matcher.create matcher
-		

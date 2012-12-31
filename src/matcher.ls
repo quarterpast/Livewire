@@ -1,7 +1,5 @@
 require! "./meta".require-all
 
-require-all "./matchers"
-
 export class Matcher
 	@subclasses = []
 	@extended = @subclasses~push
@@ -17,3 +15,5 @@ export class Matcher
 		throw new TypeError "#{@constructor.display-name} does not implement match"
 	extract: ->
 		throw new TypeError "#{@constructor.display-name} does not implement extract"
+
+require-all "./matchers"

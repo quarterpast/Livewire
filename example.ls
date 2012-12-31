@@ -1,5 +1,5 @@
 require! http
-Livewire = require "./livewire.ls"
+Livewire = require "./src"
 	..GET "/" ->"hello world"
 	..GET "/:name" [
 		->"hello #{@params.name}"

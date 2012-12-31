@@ -1,7 +1,5 @@
 require! "./meta".require-all
 
-require-all "./routers"
-
 export class Router
 	@subclasses = []
 	@extended = @subclasses~push
@@ -36,3 +34,6 @@ export class Router
 		throw new TypeError "#{@constructor.display-name} does not implement extract"
 	~>
 		throw new TypeError "#{@constructor.display-name} is abstract and can't be instantiated."
+
+
+require-all "./routers"
