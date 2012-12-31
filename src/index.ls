@@ -25,8 +25,13 @@ export class Response
 
 exports.use = -> Router.create \ANY true, it
 
-exports.use ->
+exports.use (res)->
 	@status-code = 404
+	end$ = res.end
+	res.end = ~>
+		console.log "#{res.status-code} #{@pathname}"
+		end$.apply res,&
+
 	"404 #{@pathname}"
 
 export function app req,res
@@ -38,7 +43,9 @@ export function app req,res
 
 			Router.route augs.req
 			|> each (.extract augs.req)>>(augs.req.params import)
-			|> concat-map (.handlers!)>>map (func)->->func.call augs.req,augs.res,it
+			|> concat-map (.handlers!)>>map (func,last)-->
+				res.status-code = 200
+				func.call augs.req,augs.res,last
 			|> fold (|>),""
 			|> (.pipe augs.res)
 			|> (.on \error Router.error augs.res)
