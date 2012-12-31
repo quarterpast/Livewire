@@ -11,7 +11,7 @@ export class RegexMatcher extends Matcher
 
 	#extract :: Request -> Map String Any
 	extract: (req)->
-		vals = tail (@reg.exec req.pathname) ? []
+		vals = tail (@path.exec req.pathname) ? []
 
 		if empty @params then vals
 		else list-to-obj zip @params,vals
