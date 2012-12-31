@@ -8,4 +8,6 @@ Livewire = require "./src"
 	..GET /^\/test\/(\w+)/, ->"test #{@params.0}"
 	..GET (->if it.split '/' .1 is 'other' then a:"hello" else false), ->"other #{@params.a}"
 
-http.create-server Livewire.app .listen 8000, ->console.log \listening
+port = process.env.PORT ? 8000
+
+http.create-server Livewire.app .listen port, ->console.log "listening on #port"

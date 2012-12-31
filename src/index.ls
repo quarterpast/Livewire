@@ -8,17 +8,20 @@ require! {
 export Router
 export Matcher
 
-String::pipe = (.end @constructor this)
-Buffer::pipe = (.end this)
+String::pipe = ->it.end @constructor this; it
+Buffer::pipe = ->it.end this; it
 
 export class Request
 	params: {}
 	(req)~>
-		import req
+		for k,v of req
+			@[k] = if v instanceof Function then v.bind req else v
 		import url.parse req.url,yes
 
 export class Response
-	(res)~>import res
+	(res)~>
+		for k,v of res
+			@[k] = if v instanceof Function then v.bind res else v
 
 # exports.use = -> Route \ANY true, it
 
@@ -27,17 +30,19 @@ export class Response
 # 	"404 #{@pathname}"
 
 export function app req,res
-	sync ~>
+#	sync ~>
 		try
-			aug-req = Request req
+			augs =
+				req: Request req
+				res: Response res
 
-			fns = for route in Router.route req then let aug-req,res
-				aug-req.params import route.extract aug-req
-				->route.func.sync aug-req,(Response res),it
+			fns = for route in Router.route req then let augs.req,res
+				augs.req.params import route.extract augs.req
+				->route.func.call augs.req,res,it
 
 			fns
-			|> fold (<|),"404 #{req.pathname}"
-			|> (.pipe aug-res)
+			|> fold (<|),"404 #{augs.req.pathname}"
+			|> (.pipe res)
 			|> (.on \error Router.error res)
 		catch
 			Router.error res,e
