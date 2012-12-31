@@ -1,4 +1,4 @@
-require! "./meta".require-all
+require! \require-folder
 
 export class Matcher
 	@subclasses = []
@@ -16,4 +16,4 @@ export class Matcher
 	extract: ->
 		throw new TypeError "#{@constructor.display-name} does not implement extract"
 
-require-all "./matchers"
+require-folder "./matchers"

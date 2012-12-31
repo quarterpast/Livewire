@@ -1,4 +1,4 @@
-require! "./meta".require-all
+require! \require-folder
 
 export class Router
 	@subclasses = []
@@ -32,4 +32,4 @@ export class Router
 	(@method)~>
 
 
-require-all "./routers"
+require-folder "./routers"

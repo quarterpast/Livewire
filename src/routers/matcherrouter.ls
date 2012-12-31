@@ -1,8 +1,6 @@
 require! {
 	"../router".Router
 	"../matcher".Matcher
-	"../meta".delegate
-	"../meta".instance-tracker
 }
 
 export class MatcherRouter extends Router
