@@ -35,7 +35,7 @@ exports.use (res)->
 	"404 #{@pathname}"
 
 export function app req,res
-#	sync ~>
+	sync ~>
 		try
 			augs =
 				req: Request req
@@ -43,9 +43,9 @@ export function app req,res
 
 			Router.route augs.req
 			|> each (.extract augs.req)>>(augs.req.params import)
-			|> concat-map (.handlers!)>>map (func,last)-->
+			|> concat-map (.handlers!)>>map (.async!)>>(func,last)-->
 				res.status-code = 200
-				func.call augs.req,augs.res,last
+				func.sync augs.req,augs.res,last
 			|> fold (|>),""
 			|> (.pipe augs.res)
 			|> (.on \error Router.error augs.res)
