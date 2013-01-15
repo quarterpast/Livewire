@@ -11,5 +11,5 @@ export class MatcherRouter extends Router
 	(method,@matcher,handler)~>
 		super method
 
-		@handlers = []+++handler
+		@handlers = [] ++ handler
 		if matcher not instanceof Matcher then @matcher = Matcher.create matcher

@@ -7,4 +7,4 @@ export class AlwaysRouter extends Router
 	match: -> yes
 	extract:  -> {}
 	(method,void,handler)~>
-		@handlers = []+++handler
+		@handlers = [] ++ handler
