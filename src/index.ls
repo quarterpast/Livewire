@@ -56,3 +56,5 @@ export function app req,res
 
 [\ANY \GET \POST \PUT \DELETE \OPTIONS \TRACE \CONNECT \HEAD] |> each (method)->
 	exports[method] = (...spec)~>Router.create method,...spec
+
+export async = (.async!)
