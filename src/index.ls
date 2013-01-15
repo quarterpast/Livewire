@@ -35,22 +35,24 @@ exports.use (res)->
 	"404 #{@pathname}"
 
 export function app req,res
-	sync ~>
-		try
-			augs =
-				req: Request req
-				res: Response res
-
+	augs =
+		req: Request req
+		res: Response res
+	sync do
+		:fiber ~>
 			Router.route augs.req
 			|> each (.extract augs.req)>>(augs.req.params import)
-			|> concat-map (.handlers!)>>map (.async!)>>(func,last)-->
-				res.status-code = 200
-				func.sync augs.req,augs.res,last
+			|> concat-map (.handlers)>>map (func,last)-->
+				augs.res.status-code = 200
+				if func.to-string! == /.async()$/
+					func.sync augs.req,augs.res,last
+				else func.call augs.req,augs.res,last
 			|> fold (|>),""
 			|> (.pipe augs.res)
 			|> (.on \error Router.error augs.res)
-		catch
-			Router.error augs.res,e
+
+		Router.error augs.res
+
 
 [\ANY \GET \POST \PUT \DELETE \OPTIONS \TRACE \CONNECT \HEAD] |> each (method)->
 	exports[method] = (...spec)~>Router.create method,...spec
