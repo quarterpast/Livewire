@@ -44,9 +44,7 @@ export function app req,res
 			|> each (.extract augs.req)>>(augs.req.params import)
 			|> concat-map (.handlers)>>map (func,last)-->
 				augs.res.status-code = 200
-				if func.to-string! == /.async()$/
-					func.sync augs.req,augs.res,last
-				else func.call augs.req,augs.res,last
+				func.(if func.to-string! == /.async()$/ then \sync else \call) augs.req,augs.res,last
 			|> fold (|>),""
 			|> (.pipe augs.res)
 			|> (.on \error Router.error augs.res)
