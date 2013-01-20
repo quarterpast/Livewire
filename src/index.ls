@@ -42,7 +42,7 @@ export function app req,res
 		:fiber ~>
 			Router.route augs.req
 			|> each (.extract augs.req)>>(augs.req.params import)
-			|> concat-map (.handlers!)>>map (func,last)-->
+			|> concat-map (.handlers req)>>map (func,last)-->
 				augs.res.status-code = 200
 				func.(if func.to-string! == /.async()$/ then \sync else \call) augs.req,augs.res,last
 			|> fold (|>),""
