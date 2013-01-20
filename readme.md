@@ -10,10 +10,10 @@ npm install livewire
 ##Usage
 
 ```coffeescript
-require! livewire
-.GET "/" ->"hello world"
+let @ = require \livewire
+	@GET "/" ->"hello world"
 
-require! http .create-server livewire.app .listen 8000
+	require \http .create-server @app .listen 8000
 ```
 
 ```bash
