@@ -2,7 +2,7 @@
   "name": "livewire",
   "main": "./lib",
   "description": "Livescript microrouting library",
-  "version": "0.1.2-2",
+  "version": "0.1.2-3",
   "dependencies": {
     "sync": "git://github.com/grimen/node-sync.git",
     "prelude-ls": "~0.6.0",
