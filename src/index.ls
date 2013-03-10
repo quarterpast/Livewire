@@ -5,6 +5,8 @@ require! {
 	"./matcher".Matcher
 }
 
+global import require \prelude-ls
+
 export Router
 export Matcher
 
