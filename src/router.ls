@@ -9,7 +9,7 @@ export class Router
 	#create :: Method -> ...Stuff -> Maybe Route
 	@create = (method, ...spec)->
 		if find (.supports? ...spec), @subclasses
-			@routers.push that method,...spec
+			@routers ++= that method,...spec
 		else throw new TypeError "No routers can handle #{spec}."
 
 	#route :: Request -> List Function
