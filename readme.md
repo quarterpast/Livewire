@@ -9,7 +9,7 @@ npm install livewire
 
 ##Usage
 
-```coffeescript
+```livescript
 let @ = require \livewire
 	@GET "/" ->"hello world"
 
@@ -23,7 +23,7 @@ hello world
 
 ##Extending
 
-```coffeescript
+```livescript
 class AwesomeRouter extends livewire.Router
 	@supports (instanceof Awesome)
 	match:   -> it is @awesome
