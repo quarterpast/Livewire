@@ -9,7 +9,7 @@ npm install livewire
 
 ##Usage
 
-```liveescript
+```livescript
 let @ = require \livewire
 	@GET "/" ->"hello world"
 
