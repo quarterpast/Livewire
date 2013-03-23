@@ -10,3 +10,5 @@ export class FunctionMatcher extends Matcher
 
 	#extract :: Request -> Map String Any
 	extract: ->@path it
+
+	reverse: -> # can't reverse a function
