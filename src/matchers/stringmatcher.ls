@@ -21,3 +21,13 @@ export class StringMatcher extends Matcher
 		|> tail
 		|> zip @params
 		|> list-to-obj
+
+	#reverse :: Function -> Map String Any -> Path
+	reverse: (fn,params)->
+		route-params = @params
+
+		unless (in route-params) `all` keys params
+			bad = keys params |> reject (in route-params)
+			throw new TypeError "Parameters #{join ', ' bad} not in StringMatcher #{@path}"
+
+		[@path.replace /:([a-z$_][a-z0-9$_]*)/i (m,key)->params[key]]
