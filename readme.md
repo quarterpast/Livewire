@@ -1,6 +1,8 @@
 #Livewire
 is a routing library for [Node.js](https://github.com/joyent/node) written in [LiveScript](https://github.com/gkz/LiveScript). It ships with a bare minimum configuration, and hooks to extend it how you will.
 
+[![Build Status](https://travis-ci.org/quarterto/Livewire.png?branch=develop)](https://travis-ci.org/quarterto/Livewire)
+
 ##Installation
 
 ```bash
