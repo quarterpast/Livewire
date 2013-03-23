@@ -1,4 +1,4 @@
-require! \require-folder
+require! [\require-folder \util]
 
 export class Router
 	@subclasses = []
@@ -16,6 +16,19 @@ export class Router
 	@route = (req)->
 		filter (.match req), @@routers
 
+	@reverse = (fn,params)->
+		paths = filter (.has fn), @@routers
+		|> concat-map (.reverse fn,params)
+		|> filter (?)
+
+		if empty paths
+			throw new TypeError "Could not route to #fn using #{util.inspect params}"
+
+		paths
+		|> sort-by compare (.length)
+		|> head
+
+
 	#error :: Response -> Error -> Nothing
 	@error = (res,err)-->
 		if err?
@@ -27,8 +40,12 @@ export class Router
 	match: ->@method in [\ANY it.method]
 	handlers: ->
 		throw new TypeError "#{@constructor.display-name} does not implement handlers"
+	has: ->
+		throw new TypeError "#{@constructor.display-name} does not implement has"
 	extract: ->
 		throw new TypeError "#{@constructor.display-name} does not implement extract"
+	reverse: ->
+		throw new TypeError "#{@constructor.display-name} does not implement reverse"
 	(@method)~>
 
 
