@@ -1,47 +1,55 @@
 require! {
-	livewire: "./livewire.ls"
-	describe: \pavlov
-	\http
+	Livewire: "./lib"
+	buster
+	buster.assertions
+	http
+	sync
 }
 
-{expect,throws,get} = describe
+{expect} = assertions
+async = (fn)->
+	(done)->
+		fn.async! done
 
-async = (.async!)
+async-get = (url,cb)->
+	http.get url,(res)->
+		body = []
+		res.on \data body~push
+		res.on \error cb
+		res.on \end ->cb null {body: (Buffer.concat body)to-string \utf8} import res
+	.on \error cb
 
-describe "Livewire" do
-	"Its router":
-		topic: livewire!
-		"is an http.Server": -> it instanceof http.Server
-		"has some sugar methods": (topic)-> <[ANY GET POST PUT DELETE OPTIONS TRACE CONNECT HEAD]> |> all (in keys topic)
-		"which return the router": ->
-			it is it.GET "/",(->)
-	"When we set a few routes":
-		topic: -> let this = livewire!
-			@log = id
+get = async ->async-get.sync null,...&
 
-			@GET "/a/:b" ->"hello #{@params.b}"
-			@GET "/b/:c" [
+buster.test-case "Livewire" {
+
+	set-up: ->
+		@livewire = Livewire
+			..log = id
+			..GET "/a/:b" ->"hello #{@params.b}"
+			..GET "/b/:c" [
 				->"hello #{@params.c}"
 				->"hello #{&1}"
 			]
-			@GET /^\/test\/(\w+)/, ->"test #{@params.1}"
-			@listen.sync this,8000
-			this
+			..GET /^\/test\/(\w+)/, ->"test #{@params.0}"
+		
+		@server = http.create-server @livewire.app .listen 8000
 
-		"params are filled in": ->
-			get "http://localhost:8000/a/world" .body is "hello world"
-			and get "http://localhost:8000/a/there" .body is "hello there"
+	"fills in params": async ->
+		expect (get "http://localhost:8000/a/world")body .to-be "hello world"
+		expect (get "http://localhost:8000/a/there")body .to-be "hello there"
 
-		"chains are unwound": expect "hello hello world" ->get "http://localhost:8000/b/world" .body
+	"unwinds chains": async ->
+		expect (get "http://localhost:8000/b/world")body .to-be "hello hello world"
 
-		"regexes are executed": ->
-			get "http://localhost:8000/test/things" .body is "test things"
+	"executes regexes": async ->
+		expect (get "http://localhost:8000/test/things")body .to-be "test things"
 
-		"we get a 404 message": ->
-			let this = get "http://localhost:8000/rsnt"
-				@body is "404 /rsnt" and @res.status-code is 404
+	"gives 404s": async ->
+		result = get "http://localhost:8000/rsnt"
+		expect result.body .to-be "404 /rsnt"
+		expect result.status-code .to-be 404
 
-		"and we can close the server": ->
-			it.close!
+	tear-down: -> @server.close!
 
-.run!
+}

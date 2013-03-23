@@ -15,3 +15,5 @@ export class RegexMatcher extends Matcher
 
 		if empty @params then vals
 		else list-to-obj zip @params,vals
+
+	reverse: -> # sure you can construct strings matching regexes but like hell am i doing it now
