@@ -17,9 +17,11 @@ export class StringMatcher extends Matcher
 
 	#extract :: Request -> Map String Any
 	extract: (req)->
-		(@reg.exec req.pathname) ? []
-		|> tail
-		|> zip @params
+		[route,...vals] = (@reg.exec req.pathname) ? []
+
+		req import {route}
+
+		zip @params,vals
 		|> list-to-obj
 
 	#reverse :: Function -> Map String Any -> Path
