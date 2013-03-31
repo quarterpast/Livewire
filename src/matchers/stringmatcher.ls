@@ -6,7 +6,7 @@ export class StringMatcher extends Matcher
 		@reg = path.replace /:([a-z$_][a-z0-9$_]*)/i (m,param)~>
 			@params.push param
 			/([^\/]+)/$
-		|> ->"^#{it}"+(if '/' is last path then '' else \$)
+		|> ->"^#{it}"+(if '/' is last path and path isnt '/' then '' else \$)
 		|> RegExp _,\i
 
 	@supports = ->typeof it is \string
