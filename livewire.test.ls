@@ -24,25 +24,23 @@ get = async ->async-get.sync null,...&
 buster.test-case "Livewire" {
 
 	set-up: ->
-		@livewire = Livewire
-			..log = id
-			..GET "/a/:b" ->"hello #{@params.b}"
-			..GET "/b/:c" [
-				->"hello #{@params.c}"
-				->"hello #{&1}"
-			]
-			..GET /^\/test\/(\w+)/, ->"test #{@params.0}"
-		
-		@server = http.create-server @livewire.app .listen 8000
+		Livewire.log = id
+		@server = http.create-server Livewire.app .listen 8000
 
 	"fills in params": async ->
+		Livewire.GET "/a/:b" ->"hello #{@params.b}"
 		expect (get "http://localhost:8000/a/world")body .to-be "hello world"
 		expect (get "http://localhost:8000/a/there")body .to-be "hello there"
 
 	"unwinds chains": async ->
+		Livewire.GET "/b/:c" [
+			->"hello #{@params.c}"
+			->"hello #{&1}"
+		]
 		expect (get "http://localhost:8000/b/world")body .to-be "hello hello world"
 
 	"executes regexes": async ->
+		Livewire.GET /^\/test\/(\w+)/, ->"test #{@params.0}"
 		expect (get "http://localhost:8000/test/things")body .to-be "test things"
 
 	"gives 404s": async ->
