@@ -10,7 +10,7 @@ require! {
 async = (fn)->
 	as = fn.async!
 	(done)->
-		as (err,r)->
+		as.call this, (err,r)->
 			throw that if err?
 			done!
 
@@ -26,9 +26,10 @@ get = (->async-get.sync null,...&).async!
 
 buster.test-case "Livewire" {
 
-	set-up: (done)->
+	set-up: ->
 		Livewire.log = id
-		@server = http.create-server Livewire.app .listen 8000 ->done!
+		@server = http.create-server Livewire.app .listen 8000
+
 
 	"fills in params": async ->
 		Livewire.GET "/a/:b" ->"hello #{@params.b}"
@@ -55,8 +56,8 @@ buster.test-case "Livewire" {
 		Livewire.GET "/noslash" -> "hello"
 		Livewire.GET "/slash/" -> "hello"
 
-		expect (get "/noslash/hello")status-code .to-be 404
-		expect (get "/slash/hello")status-code .to-be 200
+		expect (get "http://localhost:8000/noslash/hello")status-code .to-be 404
+		expect (get "http://localhost:8000/slash/hello")status-code .to-be 200
 
 	tear-down: -> @server.close!
 
