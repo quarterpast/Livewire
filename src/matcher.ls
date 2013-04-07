@@ -5,7 +5,7 @@ export class Matcher
 	@extended = @subclasses~push
 
 	@create = (spec)->
-		if find (.supports spec), @subclasses
+		if spec? and find (.supports spec), @subclasses
 			that spec
 		else throw new TypeError "No matchers can handle #{spec}."
 

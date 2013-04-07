@@ -4,9 +4,10 @@ require! {
 	buster.assertions
 	http
 	sync
+	"readable-stream".Readable
 }
 
-{expect} = assertions
+{expect,assert} = assertions
 async = (fn)->
 	as = fn.async!
 	(done)->
@@ -44,7 +45,7 @@ buster.test-case "Livewire" {
 	"unwinds chains": async ->
 		Livewire.GET "/b/:c" [
 			->"hello #{@params.c}"
-			->"hello #{&1}"
+			->"hello #{it.body.read!}"
 		]
 		expect (get "http://localhost:8000/b/world")body .to-be "hello hello world"
 
@@ -59,9 +60,9 @@ buster.test-case "Livewire" {
 		expect (get "http://localhost:8000/other")body .to-be "other hello"
 
 	"gives 404s": async ->
-		result = get "http://localhost:8000/rsnt"
-		expect result.body .to-be "404 /rsnt"
-		expect result.status-code .to-be 404
+		get "http://localhost:8000/rsnt"
+			..body `assert.same` "404 /rsnt"
+			..status-code `assert.same` 404
 
 	"trailing slash implies prefix":
 		"usually": async ->
@@ -95,6 +96,48 @@ buster.test-case "Livewire" {
 				done!
 				""
 			get "http://localhost:8000/my/function/thing" ->
+
+	"handles responses of type":
+		"string": async ->
+			Livewire.GET "/response/type/string" -> "string response"
+			expect (get "http://localhost:8000/response/type/string")body
+			.to-be "string response"
+
+		"buffer": async ->
+			Livewire.GET "/response/type/buffer" -> new Buffer "buffer response"
+			expect (get "http://localhost:8000/response/type/buffer")body
+			.to-be "buffer response"
+
+		"stream": async ->
+			Livewire.GET "/response/type/stream" ->
+				new class extends Readable
+					_read: -> if @push "stream response" then @push null
+			expect (get "http://localhost:8000/response/type/stream")body
+			.to-be "stream response"
+
+		"object": async ->
+			Livewire.GET "/response/type/object" ->
+				body:"object response" status-code:201
+			get "http://localhost:8000/response/type/object"
+				..status-code `assert.same` 201
+				..body `assert.same` "object response"
+
+		"error code": async ->
+			Livewire.GET "/response/type/errorcode" -> Error 418
+			get "http://localhost:8000/response/type/errorcode"
+				..status-code `assert.same` 418
+				..body `assert.same` "I'm a teapot"
+
+		"error message": async ->
+			Livewire.GET "/response/type/errormessage" -> Error "woah there!"
+			get "http://localhost:8000/response/type/errormessage"
+				..status-code `assert.same` 500
+				..body `assert.same` "woah there!"
+
+	"sets headers": async ->
+		Livewire.GET "/header-test" -> body:"" headers:"x-header-test":"test header"
+		get "http://localhost:8000/header-test"
+			..headers.'x-header-test' `assert.same` "test header"
 
 
 	tear-down: -> @server.close!
