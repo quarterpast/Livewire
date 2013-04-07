@@ -24,6 +24,11 @@ async-get = (url,cb)->
 
 get = (->async-get.sync null,...&).async!
 
+buster.test-runner.on \suite:end (results)->
+	process.next-tick ->
+		process.exit results.errors + results.timeouts + results.failures
+
+
 buster.test-case "Livewire" {
 
 	set-up: ->
