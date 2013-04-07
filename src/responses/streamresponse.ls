@@ -20,4 +20,5 @@ export class StreamResponse extends Response
 		| (.readable) => new class extends Duplex
 			_write: (chunk,encoding,callback)->
 				callback null # disregard input
-			_read: body~_read
+			_read: (size)->
+				@push body.read size

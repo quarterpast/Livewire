@@ -4,9 +4,10 @@ require! {
 	buster.assertions
 	http
 	sync
+	stream
 }
 
-{expect} = assertions
+{expect,assert} = assertions
 async = (fn)->
 	as = fn.async!
 	(done)->
@@ -54,9 +55,9 @@ buster.test-case "Livewire" {
 		expect (get "http://localhost:8000/other")body .to-be "other hello"
 
 	"gives 404s": async ->
-		result = get "http://localhost:8000/rsnt"
-		expect result.body .to-be "404 /rsnt"
-		expect result.status-code .to-be 404
+		get "http://localhost:8000/rsnt"
+			..body `assert.same` "404 /rsnt"
+			..status-code `assert.same` 404
 
 	"trailing slash implies prefix":
 		"usually": async ->
@@ -90,6 +91,36 @@ buster.test-case "Livewire" {
 				done!
 				""
 			get "http://localhost:8000/my/function/thing" ->
+
+	"handles responses of type":
+		"string": async ->
+			Livewire.GET "/response/type/string" -> "string response"
+			expect (get "http://localhost:8000/response/type/string")body
+			.to-be "string response"
+
+		"buffer": async ->
+			Livewire.GET "/response/type/buffer" -> new Buffer "buffer response"
+			expect (get "http://localhost:8000/response/type/buffer")body
+			.to-be "buffer response"
+
+		"stream": async ->
+			Livewire.GET "/response/type/stream" ->
+				new class extends stream.Readable
+					_read: -> if @push "stream response" then @push null
+			expect (get "http://localhost:8000/response/type/stream")body
+			.to-be "stream response"
+
+		"error code": async ->
+			Livewire.GET "/response/type/errorcode" -> Error 418
+			get "http://localhost:8000/response/type/errorcode"
+				..status-code `assert.same` 418
+				..body `assert.same` "I'm a teapot"
+
+		"error message": async ->
+			Livewire.GET "/response/type/errormessage" -> Error "woah there!"
+			get "http://localhost:8000/response/type/errormessage"
+				..status-code `assert.same` 500
+				..body `assert.same` "woah there!"
 
 
 	tear-down: -> @server.close!
