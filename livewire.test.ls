@@ -129,6 +129,11 @@ buster.test-case "Livewire" {
 				..status-code `assert.same` 500
 				..body `assert.same` "woah there!"
 
+	"sets headers": async ->
+		Livewire.GET "/header-test" -> body:"" headers:"x-header-test":"test header"
+		get "http://localhost:8000/header-test"
+			..headers.'x-header-test' `assert.same` "test header"
+
 
 	tear-down: -> @server.close!
 
