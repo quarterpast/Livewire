@@ -31,7 +31,7 @@ export function app req,res
 			Router.route req
 			|> each (.extract req)>>(req.params import)
 			|> concat-map (.handlers req)>>map (.bind req)
-			|> fold Response~handle, new EmptyResponse req.path
+			|> fold Response~handle, EmptyResponse req.path
 			|> (.respond res)
 			|> (.on \error Router.error res)
 
