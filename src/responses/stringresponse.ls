@@ -1,11 +1,9 @@
 require! {
-	"../response"
+	"../response".Response
 	"readable-stream".Duplex
 }
 
-console.log response
-
-export class StringResponse extends response.Response
+export class StringResponse extends Response
 	@supports = ->it.constructor is String or it instanceof Buffer
 
 	status-code: 200
