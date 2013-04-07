@@ -6,7 +6,8 @@
   "dependencies": {
     "sync": "~0.2.1",
     "prelude-ls": "~0.6.0",
-    "require-folder": "0.x"
+    "require-folder": "0.x",
+    "readable-stream": "~1.0.2"
   },
   "repository": {
     "type": "git",
