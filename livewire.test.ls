@@ -40,7 +40,7 @@ runner.on \suite:end (results)->
 	process.next-tick ->
 		process.exit results.errors + results.timeouts + results.failures
 
-reporter = buster.reporters.dots.create {+color}
+reporter = buster.reporters.(process.env.BUSTER_REPORTER ? \dots).create {+color}
 reporter.listen runner
 
 runner.run-suite [] ++ buster.test-case "Livewire" {
