@@ -25,14 +25,14 @@ export class Response
 			.. import res-b
 
 			..status-code = res-b.status-code ? res-a.status-code
-			..headers = res-a.headers import res-b	.headers
+			..headers = res-a.headers import res-b.headers
 			..body = res-a.body.pipe res-b.body
 
 	@handle = (res,handler)->
 		res `@add` handler res
 
 	respond: (res)->
-		res.write-head @status-code,@reason,@headers
+		res.write-head @status-code,@reason ? '',@headers
 		res import this
 		@body.pipe res
 
