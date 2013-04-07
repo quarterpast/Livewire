@@ -13,7 +13,6 @@ export class Response
 		if spec? and find (.supports spec), @subclasses
 			that spec
 		else
-			console.log spec
 			throw new TypeError "No responses can handle #{spec}."
 
 	@add = (a, b)->
@@ -29,7 +28,11 @@ export class Response
 			..body = res-a.body.pipe res-b.body
 
 	@handle = (res,handler)->
-		res `@add` handler res
+		if res.final then res
+		else res `@add` handler res
+
+	@final = (res)->
+		(Response.to-response res) import {+final}
 
 	respond: (res)->
 		res.write-head @status-code,@reason ? '',@headers
