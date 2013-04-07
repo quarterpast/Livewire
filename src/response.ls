@@ -10,9 +10,11 @@ export class Response
 		else @create res
 
 	@create = (spec)->
-		if find (.supports spec), @subclasses
-			new that spec
-		else throw new TypeError "No responses can handle #{spec}."
+		if spec? and find (.supports spec), @subclasses
+			that spec
+		else
+			console.log spec
+			throw new TypeError "No responses can handle #{spec}."
 
 	@add = (a, b)->
 		res-a = @to-response a
@@ -35,7 +37,7 @@ export class Response
 		@body.pipe res
 
 
-	(@body)->
+	(@body)~>
 		@headers = {}
 		@reason = null
 

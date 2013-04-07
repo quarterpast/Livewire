@@ -110,6 +110,13 @@ buster.test-case "Livewire" {
 			expect (get "http://localhost:8000/response/type/stream")body
 			.to-be "stream response"
 
+		"object": async ->
+			Livewire.GET "/response/type/object" ->
+				body:"object response" status-code:201
+			get "http://localhost:8000/response/type/object"
+				..status-code `assert.same` 201
+				..body `assert.same` "object response"
+
 		"error code": async ->
 			Livewire.GET "/response/type/errorcode" -> Error 418
 			get "http://localhost:8000/response/type/errorcode"

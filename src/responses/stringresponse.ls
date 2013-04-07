@@ -4,11 +4,11 @@ require! {
 }
 
 export class StringResponse extends Response
-	@supports = (.constructor is String)
+	@supports = ->it.constructor is String or it instanceof Buffer
 
 	status-code: 200
 
-	(body)->
+	(body)~>
 		super new class extends Duplex
 			_read: (size)->
 				if @push body

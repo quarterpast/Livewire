@@ -9,7 +9,7 @@ export class StreamResponse extends Response
 
 	status-code: 200
 
-	(body)->
+	(body)~>
 		super match body
 		| (.writable) and (.readable) => body
 		| (.writable) => new class extends Duplex
