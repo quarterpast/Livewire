@@ -1,6 +1,6 @@
 require! {
 	"../response"
-	"stream".Duplex
+	"readable-stream".Duplex
 }
 
 console.log response

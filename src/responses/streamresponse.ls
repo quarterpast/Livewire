@@ -1,7 +1,7 @@
 require! {
 	"../response".Response
 	"stream".Stream
-	"stream".Duplex
+	"readable-stream".Duplex
 }
 
 export class StreamResponse extends Response

@@ -4,7 +4,7 @@ require! {
 	buster.assertions
 	http
 	sync
-	stream
+	"readable-stream".Readable
 }
 
 {expect,assert} = assertions
@@ -110,7 +110,7 @@ buster.test-case "Livewire" {
 
 		"stream": async ->
 			Livewire.GET "/response/type/stream" ->
-				new class extends stream.Readable
+				new class extends Readable
 					_read: -> if @push "stream response" then @push null
 			expect (get "http://localhost:8000/response/type/stream")body
 			.to-be "stream response"
