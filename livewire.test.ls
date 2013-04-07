@@ -7,7 +7,7 @@ require! {
 	"readable-stream".Readable
 }
 
-{expect,assert} = assertions
+{expect,assert,refute} = assertions
 async = (fn)->
 	as = fn.async!
 	(done)->
@@ -138,6 +138,18 @@ buster.test-case "Livewire" {
 		Livewire.GET "/header-test" -> body:"" headers:"x-header-test":"test header"
 		get "http://localhost:8000/header-test"
 			..headers.'x-header-test' `assert.same` "test header"
+
+	"final responses are final": async ->
+		{final} = Livewire.Response
+		spy = @spy -> "never called"
+		Livewire.GET "/final" [
+			-> final "final response"
+			spy
+		]
+		get "http://localhost:8000/final"
+			..body `assert.same` "final response"
+
+		refute.called spy
 
 
 	tear-down: -> @server.close!
