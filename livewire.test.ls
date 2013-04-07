@@ -39,7 +39,7 @@ buster.test-case "Livewire" {
 	"unwinds chains": async ->
 		Livewire.GET "/b/:c" [
 			->"hello #{@params.c}"
-			->"hello #{&1}"
+			->"hello #{it.body.read!}"
 		]
 		expect (get "http://localhost:8000/b/world")body .to-be "hello hello world"
 
