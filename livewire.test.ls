@@ -153,7 +153,7 @@ runner.run-suite [] ++ buster.test-case "Livewire" {
 			"the original request": (done)->
 					Livewire.GET "/context/request" ->
 						do done ~>
-							@request `assert.has-prototype` http.ServerRequest
+							http.IncomingMessage.prototype `assert.same` Object.get-prototype-of @request
 						""
 					get "http://localhost:8000/context/request" ->
 			"the route":

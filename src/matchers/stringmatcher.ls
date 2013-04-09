@@ -16,10 +16,10 @@ export class StringMatcher extends Matcher
 		@reg.test req.pathname
 
 	#extract :: Request -> Map String Any
-	extract: (req)->
-		[route,...vals] = (@reg.exec req.pathname) ? []
+	extract: (ctx)->
+		[route,...vals] = (@reg.exec ctx.request.pathname) ? []
 
-		req import {route}
+		ctx import {route}
 
 		zip @params,vals
 		|> list-to-obj

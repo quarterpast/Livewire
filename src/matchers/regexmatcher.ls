@@ -10,10 +10,10 @@ export class RegexMatcher extends Matcher
 	match: (req)->@path.test req.pathname
 
 	#extract :: Request -> Map String Any
-	extract: (req)->
-		[route,...vals] = (@path.exec req.pathname) ? []
+	extract: (ctx)->
+		[route,...vals] = (@path.exec ctx.request.pathname) ? []
 
-		req import {route}
+		ctx import {route}
 
 		if empty @params then vals
 		else list-to-obj zip @params,vals

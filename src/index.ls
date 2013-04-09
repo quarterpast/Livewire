@@ -5,6 +5,7 @@ require! {
 	"./matcher".Matcher
 	"./response".Response
 	"./responses/emptyresponse".EmptyResponse
+	"./handlercontext".HandlerContext
 }
 
 global import require \prelude-ls
@@ -12,6 +13,7 @@ global import require \prelude-ls
 export Router
 export Matcher
 export Response
+export HandlerContext
 
 String::pipe = ->it.end @constructor this; it
 Buffer::pipe = ->it.end this; it
@@ -26,11 +28,12 @@ exports.log = (res)-> console.log "#{res.status-code} #{@pathname}"
 
 export function app req,res
 	req import Request req
+	ctx = new HandlerContext req
 	sync do
 		:fiber ~>
 			Router.route req
-			|> each (.extract req)>>(req.params import)
-			|> concat-map (.handlers req)>>map (.bind req)
+			|> each (.extract ctx)>>(ctx.params import)
+			|> concat-map (.handlers req)>>map (.bind ctx)
 			|> fold Response~handle, EmptyResponse req.path
 			|> (.respond res)
 			|> (.on \error Router.error res)
