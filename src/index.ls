@@ -18,14 +18,10 @@ export HandlerContext
 String::pipe = ->it.end @constructor this; it
 Buffer::pipe = ->it.end this; it
 
-export class Request
-	(req)~>
-
 exports.use = -> Router.create \ANY true, it
 exports.log = (res)-> console.log "#{res.status-code} #{@pathname}"
 
 export function app req,res
-	req import Request req
 	ctx = new HandlerContext req
 	sync do
 		:fiber ~>
