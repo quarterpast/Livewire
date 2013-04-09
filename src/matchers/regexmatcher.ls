@@ -7,11 +7,11 @@ export class RegexMatcher extends Matcher
 	@supports = (instanceof RegExp)
 
 	#match :: Request -> Boolean
-	match: (req)->@path.test req.pathname
+	match: (ctx)->@path.test ctx.pathname
 
 	#extract :: Request -> Map String Any
 	extract: (ctx)->
-		[route,...vals] = (@path.exec ctx.request.pathname) ? []
+		[route,...vals] = (@path.exec ctx.pathname) ? []
 
 		ctx import {route}
 

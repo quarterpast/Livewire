@@ -10,7 +10,7 @@ export class FunctionMatcher extends Matcher
 
 	#extract :: Request -> Map String Any
 	extract: ->
-		it.route = it.request.pathname
-		@path it.request
+		it.route = it.pathname
+		@path it
 
 	reverse: -> # can't reverse a function

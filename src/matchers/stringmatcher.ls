@@ -17,7 +17,7 @@ export class StringMatcher extends Matcher
 
 	#extract :: Request -> Map String Any
 	extract: (ctx)->
-		[route,...vals] = (@reg.exec ctx.request.pathname) ? []
+		[route,...vals] = (@reg.exec ctx.pathname) ? []
 
 		ctx import {route}
 

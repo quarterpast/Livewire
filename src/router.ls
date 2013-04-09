@@ -13,8 +13,8 @@ export class Router
 		else throw new TypeError "No routers can handle #{spec}."
 
 	#route :: Request -> List Function
-	@route = (req)->
-		filter (.match req), @@routers
+	@route = (ctx)->
+		filter (.match ctx), @@routers
 
 	@reverse = (fn,params)->
 		paths = filter (.has fn), @@routers
@@ -37,7 +37,7 @@ export class Router
 
 			console.error err.stack ? err.to-string!
 
-	match: ->@method in [\ANY it.method]
+	match: ->@method in [\ANY it.request.method]
 	handlers: ->
 		throw new TypeError "#{@constructor.display-name} does not implement handlers"
 	has: ->
