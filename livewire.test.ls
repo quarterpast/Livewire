@@ -12,8 +12,8 @@ async = (fn)->
 	as = fn.async!
 	(done)->
 		as.call this, (err,r)->
-			throw that if err?
-			done!
+			do done ~>
+				throw that if err?
 
 async-get = (url,cb)->
 	http.get url,(res)->
@@ -88,28 +88,6 @@ runner.run-suite [] ++ buster.test-case "Livewire" {
 			Livewire.GET '/' -> "hello"
 			expect (get "http://localhost:8000/trailer")status-code .to-be 404
 
-	"the route gets passed in to the handler":
-		"for strings": (done)->
-			Livewire.GET "/my/awesome/:route" ->
-				expect @route .to-be "/my/awesome/#{@params.route}"
-				done!
-				""
-			get "http://localhost:8000/my/awesome/thing" ->
-
-		"for regexes": (done)->
-			Livewire.GET /^\/my\/regex\/thing$/, ->
-				expect @route .to-be "/my/regex/thing"
-				done!
-				""
-			get "http://localhost:8000/my/regex/thing" ->
-
-		"for functions": (done)->
-			Livewire.GET (.pathname is "/my/function/thing"), ->
-				expect @route .to-be "/my/function/thing"
-				done!
-				""
-			get "http://localhost:8000/my/function/thing" ->
-
 	"handles responses of type":
 		"string": async ->
 			Livewire.GET "/response/type/string" -> "string response"
@@ -163,6 +141,44 @@ runner.run-suite [] ++ buster.test-case "Livewire" {
 			..body `assert.same` "final response"
 
 		refute.called spy
+
+	"handlers":
+		"are called witdh a HandlerContext": (done)->
+			Livewire.GET '/context' ->
+				do done ~>
+					@constructor.display-name `assert.same` \HandlerContext
+				""
+			get 'http://localhost:8000/context' ->
+		"are given":
+			"the original request": (done)->
+					Livewire.GET "/context/request" ->
+						do done ~>
+							@request `assert.has-prototype` http.ServerRequest
+						""
+					get "http://localhost:8000/context/request" ->
+			"the route":
+				"for strings": (done)->
+					Livewire.GET "/my/awesome/:route" ->
+						do done ~>
+							expect @route .to-be "/my/awesome/#{@params.route}"
+						""
+					get "http://localhost:8000/my/awesome/thing" ->
+
+				"for regexes": (done)->
+					Livewire.GET /^\/my\/regex\/thing$/, ->
+						do done ~>
+							expect @route .to-be "/my/regex/thing"
+						""
+					get "http://localhost:8000/my/regex/thing" ->
+
+				"for functions": (done)->
+					Livewire.GET (.pathname is "/my/function/thing"), ->
+						do done ~>
+							expect @route .to-be "/my/function/thing"
+						""
+					get "http://localhost:8000/my/function/thing" ->
+
+
 
 
 	tear-down: -> @server.close!
