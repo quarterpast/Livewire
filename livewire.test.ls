@@ -1,13 +1,12 @@
 require! {
 	Livewire: "./lib"
-	buster:"buster-test"
-	assertions:"buster-assertions"
-	"buster-sinon"
+	"buster-minimal"
 	http
 	sync
 	"readable-stream".Readable
 }
-{expect,assert,refute} = assertions
+buster = new buster-minimal
+{expect,assert,refute} = buster.assertions
 async = (fn)->
 	as = fn.async!
 	(done)->
@@ -25,25 +24,7 @@ async-get = (url,cb)->
 
 get = (->async-get.sync null,...&).async!
 
-count = 0
-
-assertions.on \pass ->count++
-assertions.on \failure ->count++
-buster.test-runner.on-create (runner)->
-	runner.on \test:start ->count := 0
-	runner.on \test:setUp ->assertions.throw-on-failure = on
-
-runner = buster.test-runner.create!
-runner.assertion-count = -> count
-
-runner.on \suite:end (results)->
-	process.next-tick ->
-		process.exit results.errors + results.timeouts + results.failures
-
-reporter = buster.reporters.(process.env.BUSTER_REPORTER ? \dots).create {+color}
-reporter.listen runner
-
-runner.run-suite [] ++ buster.test-case "Livewire" {
+buster.add-case "Livewire" {
 
 	set-up: ->
 		Livewire.log = id
@@ -184,3 +165,4 @@ runner.run-suite [] ++ buster.test-case "Livewire" {
 	tear-down: -> @server.close!
 
 }
+.run!
