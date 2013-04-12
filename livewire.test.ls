@@ -160,7 +160,7 @@ buster.add-case "Livewire" {
 					get "http://localhost:8000/my/function/thing" ->
 
 	"can set a new context for routes": async ->
-		ctx = new Livewire
+		ctx = new Livewire.Context
 		ctx.GET "/" -> "new context"
 		Livewire.GET "/old-context" -> "old context"
 		@server = http.create-server ctx.app .listen 8001

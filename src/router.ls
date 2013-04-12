@@ -4,33 +4,6 @@ export class Router
 	@subclasses = []
 	@extended = @subclasses~push
 
-	@routers = []
-
-	@factory = (method)->
-		(...spec)~> @create method,...spec
-	#create :: Method -> ...Stuff -> Maybe Route
-	@create = (method, ...spec)->
-		if find (.supports? ...spec), @subclasses
-			@routers ++= that method,...spec
-		else throw new TypeError "No routers can handle #{spec}."
-
-	#route :: Request -> List Function
-	@route = (ctx)->
-		filter (.match ctx), @@routers
-
-	@reverse = (fn,params)->
-		paths = filter (.has fn), @@routers
-		|> concat-map (.reverse fn,params)
-		|> filter (?)
-
-		if empty paths
-			throw new TypeError "Could not route to #fn using #{util.inspect params}"
-
-		paths
-		|> sort-by compare (.length)
-		|> head
-
-
 	#error :: Response -> Error -> Nothing
 	@error = (res,err)-->
 		if err?
