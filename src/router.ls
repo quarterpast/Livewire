@@ -6,6 +6,8 @@ export class Router
 
 	@routers = []
 
+	@factory = (method)->
+		(...spec)~> @create method,...spec
 	#create :: Method -> ...Stuff -> Maybe Route
 	@create = (method, ...spec)->
 		if find (.supports? ...spec), @subclasses

@@ -14,6 +14,7 @@ export Router
 export Matcher
 export Response
 export HandlerContext
+export async = (.async!)
 
 String::pipe = ->it.end @constructor this; it
 Buffer::pipe = ->it.end this; it
@@ -21,21 +22,17 @@ Buffer::pipe = ->it.end this; it
 exports.use = -> Router.create \ANY true, it
 exports.log = (res)-> console.log "#{res.status-code} #{@pathname}"
 
-export function app req,res
-	ctx = new HandlerContext req
-	sync do
-		:fiber ~>
-			Router.route ctx
-			|> each (.extract ctx)>>(ctx.params import)
-			|> concat-map (.handlers ctx)>>map (.bind ctx)
-			|> fold Response~handle, EmptyResponse ctx.path
-			|> (.respond res)
-			|> (.on \error Router.error res)
+class Livewire implements (map Router.factory {\ANY \GET \POST \PUT \DELETE \OPTIONS \TRACE \CONNECT \HEAD})
 
-		Router.error res
+	app: (req,res)->
+		ctx = new HandlerContext req
+		sync do
+			:fiber ~>
+				Router.route ctx
+				|> each (.extract ctx)>>(ctx.params import)
+				|> concat-map (.handlers ctx)>>map (.bind ctx)
+				|> fold Response~handle, EmptyResponse ctx.path
+				|> (.respond res)
+				|> (.on \error Router.error res)
 
-
-[\ANY \GET \POST \PUT \DELETE \OPTIONS \TRACE \CONNECT \HEAD] |> each (method)->
-	exports[method] = (...spec)~>Router.create method,...spec
-
-export async = (.async!)
+			Router.error res
