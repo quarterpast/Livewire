@@ -15,9 +15,6 @@ export Matcher
 export Response
 export HandlerContext
 
-String::pipe = ->it.end @constructor this; it
-Buffer::pipe = ->it.end this; it
-
 exports.use = -> Router.create \ANY true, it
 exports.log = (res)-> console.log "#{res.status-code} #{@pathname}"
 
