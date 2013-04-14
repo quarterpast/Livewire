@@ -24,12 +24,16 @@ async-get = (url,cb)->
 
 get = (->async-get.sync null,...&).async!
 
-buster.add-case "Livewire" {
-
-	set-up: ->
+buster.cases.push (import {
+	context-set-up: (done)->
 		Livewire.log = id
-		@server = http.create-server Livewire.app .listen 8000
+		@server = http.create-server Livewire.app .listen 8000 ->
+			console.log \listening
+			done!
 
+	context-tear-down: -> @server.close!
+
+}) buster.test-case "Livewire" {
 
 	"fills in params": async ->
 		Livewire.GET "/a/:b" ->"hello #{@params.b}"
@@ -159,10 +163,20 @@ buster.add-case "Livewire" {
 						""
 					get "http://localhost:8000/my/function/thing" ->
 
+	"can set a new context for routes": async ->
+		ctx = new Livewire.Context
+		ctx.GET "/" -> "new context"
+		Livewire.GET "/old-context" -> "old context"
+		@server = http.create-server ctx.app .listen 8001
 
+		get "http://localhost:8001/"
+			..body `assert.same` "new context"
 
+		get "http://localhost:8001/old-context"
+			..status-code `assert.same` 404
 
-	tear-down: -> @server.close!
-
+		get "http://localhost:8000/old-context"
+			..body `assert.same` "old context"
 }
-.run!
+
+buster.run!
