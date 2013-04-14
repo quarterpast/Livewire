@@ -1,6 +1,9 @@
-require! [\require-folder \util]
+require! {
+	"./oop".abstract
+	\require-folder
+}
 
-export class Router
+export class Router implements abstract {\handlers \has \extract \reverse}
 	@subclasses = []
 	@extended = @subclasses~push
 
@@ -13,14 +16,6 @@ export class Router
 			console.error err.stack ? err.to-string!
 
 	match: ->@method in [\ANY it.request.method]
-	handlers: ->
-		throw new TypeError "#{@constructor.display-name} does not implement handlers"
-	has: ->
-		throw new TypeError "#{@constructor.display-name} does not implement has"
-	extract: ->
-		throw new TypeError "#{@constructor.display-name} does not implement extract"
-	reverse: ->
-		throw new TypeError "#{@constructor.display-name} does not implement reverse"
 	(@method)~>
 
 
