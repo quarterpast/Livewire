@@ -3,7 +3,7 @@ require! {
 	\require-folder
 }
 
-export class Router implements abstract {\handlers \has \extract \reverse}
+export class Router implements abstract {\handlers \has \extract \reverse \routes}
 	@subclasses = []
 	@extended = @subclasses~push
 

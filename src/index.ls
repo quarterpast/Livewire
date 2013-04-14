@@ -28,6 +28,9 @@ class Livewire
 
 			Router.error res
 
+	remove: (spec)->
+		@routers = reject (.routes spec), @routers
+
 	->
 		@routers = []
 		@factory = new RouterFactory this
