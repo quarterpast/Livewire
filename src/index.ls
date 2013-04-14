@@ -2,6 +2,7 @@ require! [sync,url]
 
 require! {
 	"./router".Router
+	"./routerfactory".RouterFactory
 	"./matcher".Matcher
 	"./response".Response
 	"./responses/emptyresponse".EmptyResponse
@@ -10,32 +11,34 @@ require! {
 
 global import require \prelude-ls
 
-export Router
-export Matcher
-export Response
-export HandlerContext
+class Livewire
+	use: -> Router.create \ANY true, it
+	log: (res)-> console.log "#{res.status-code} #{@pathname}"
 
-String::pipe = ->it.end @constructor this; it
-Buffer::pipe = ->it.end this; it
+	app: (req,res)~>
+		ctx = new HandlerContext req
+		sync do
+			:fiber ~>
+				@factory.route ctx
+				|> each (.extract ctx)>>(ctx.params import)
+				|> concat-map (.handlers ctx)>>map (.bind ctx)
+				|> fold Response~handle, EmptyResponse ctx.path
+				|> (.respond res)
+				|> (.on \error Router.error res)
 
-exports.use = -> Router.create \ANY true, it
-exports.log = (res)-> console.log "#{res.status-code} #{@pathname}"
+			Router.error res
 
-export function app req,res
-	ctx = new HandlerContext req
-	sync do
-		:fiber ~>
-			Router.route ctx
-			|> each (.extract ctx)>>(ctx.params import)
-			|> concat-map (.handlers ctx)>>map (.bind ctx)
-			|> fold Response~handle, EmptyResponse ctx.path
-			|> (.respond res)
-			|> (.on \error Router.error res)
+	->
+		@routers = []
+		@factory = new RouterFactory this
 
-		Router.error res
+		import map @factory~make-router, {\ANY \GET \POST \PUT \DELETE \OPTIONS \TRACE \CONNECT \HEAD}
 
-
-[\ANY \GET \POST \PUT \DELETE \OPTIONS \TRACE \CONNECT \HEAD] |> each (method)->
-	exports[method] = (...spec)~>Router.create method,...spec
-
-export async = (.async!)
+module.exports = new Livewire import {
+	Matcher
+	Response
+	HandlerContext
+	Router
+	async: (.async!)
+	Context: Livewire
+}
