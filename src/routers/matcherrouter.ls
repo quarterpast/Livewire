@@ -11,6 +11,7 @@ export class MatcherRouter extends Router
 	reverse:  (fn,params)-> @matcher.reverse fn,params
 	handlers: -> [] ++ @handler
 	has: (=== @handler)
+	routes: (=== @matcher.path)
 	(method,@matcher,@handler)~>
 		super method
 
