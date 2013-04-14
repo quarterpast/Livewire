@@ -167,7 +167,7 @@ buster.cases.push (import {
 		ctx = new Livewire.Context
 		ctx.GET "/" -> "new context"
 		Livewire.GET "/old-context" -> "old context"
-		@server = http.create-server ctx.app .listen 8001
+		@newserver = http.create-server ctx.app .listen 8001
 
 		get "http://localhost:8001/"
 			..body `assert.same` "new context"
@@ -177,6 +177,14 @@ buster.cases.push (import {
 
 		get "http://localhost:8000/old-context"
 			..body `assert.same` "old context"
+
+	"routes can be removed":
+		"by specifier": async ->
+			Livewire.GET "/route/to/remove" -> "route to remove"
+			Livewire.remove "/route/to/remove"
+
+			get "http://localhost:8000/route/to/remove"
+				..status-code `assert.same` 404
 }
 
 buster.run!

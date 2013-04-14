@@ -1,6 +1,9 @@
-require! \require-folder
+require! {
+	"./oop".abstract
+	\require-folder
+}
 
-export class Matcher
+export class Matcher implements abstract {\match \extract \constructor}
 	@subclasses = []
 	@extended = @subclasses~push
 
@@ -9,11 +12,6 @@ export class Matcher
 			that spec
 		else throw new TypeError "No matchers can handle #{spec}."
 
-	~>
-		throw new TypeError "#{@constructor.display-name} is abstract and can't be instantiated."
-	match:  ->
-		throw new TypeError "#{@constructor.display-name} does not implement match"
-	extract: ->
-		throw new TypeError "#{@constructor.display-name} does not implement extract"
+	~> @constructor ...
 
 require-folder "./matchers"
