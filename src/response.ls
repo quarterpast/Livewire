@@ -1,4 +1,7 @@
-require! \require-folder
+require! {
+	\require-folder
+	util
+}
 export class Response
 	status-code: 404
 
@@ -13,7 +16,7 @@ export class Response
 		if spec? and find (.supports spec), @subclasses
 			that spec
 		else
-			throw new TypeError "No responses can handle #{spec}."
+			throw new TypeError "No responses can handle #{util.inspect spec}."
 
 	@add = (a, b)->
 		res-a = @to-response a
@@ -25,11 +28,10 @@ export class Response
 
 			..status-code = res-b.status-code ? res-a.status-code
 			..headers = res-a.headers import res-b.headers
-			..body = res-a.body.pipe res-b.body
 
-	@handle = (res,handler)->
+	@handle = (ctx,res,handler)~~>
 		if res.final then res
-		else res `@add` handler res
+		else res `@add` handler.sync ctx, res
 
 	@final = (res)->
 		(Response.to-response res) import {+final}

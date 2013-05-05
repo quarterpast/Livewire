@@ -21,8 +21,8 @@ class Livewire
 			:fiber ~>
 				@factory.route ctx
 				|> each (.extract ctx)>>(ctx.params import)
-				|> concat-map (.handlers ctx)>>map (.bind ctx)
-				|> fold Response~handle, EmptyResponse ctx.path
+				|> concat-map (.handlers ctx)>>map (.async!)
+				|> fold (Response.handle ctx), EmptyResponse ctx.path
 				|> (.respond res)
 				|> (.on \error Router.error res)
 
@@ -44,4 +44,7 @@ module.exports = new Livewire import {
 	Router
 	async: (.async!)
 	Context: Livewire
+	magic:
+		sync: (fun)->(...args)->fun.sync null,...args
+		async: (.async!)
 }
