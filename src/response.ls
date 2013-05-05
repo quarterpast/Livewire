@@ -29,9 +29,9 @@ export class Response
 			..status-code = res-b.status-code ? res-a.status-code
 			..headers = res-a.headers import res-b.headers
 
-	@handle = (ctx,res,handler)~~>
+	@handle = (res,handler)->
 		if res.final then res
-		else res `@add` handler.sync ctx, res
+		else res `@add` handler.sync null res
 
 	@final = (res)->
 		(Response.to-response res) import {+final}

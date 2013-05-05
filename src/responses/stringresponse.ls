@@ -12,7 +12,7 @@ export class StringResponse extends Response
 		super new class extends Duplex
 			offset: 0
 			_read: (size)->
-				@push body.substr @offset,size-1
+				@push body.slice @offset,@offset+size-1
 				@offset += size
 				if @offset > body.length then return @push null # end the stream
 
