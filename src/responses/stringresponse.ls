@@ -13,5 +13,5 @@ export class StringResponse extends Response
 			offset: 0
 			_read: (size)->
 				@push body.slice @offset,@offset+size-1
-				@offset += size
+				@offset += size-1
 				if @offset > body.length then return @push null # end the stream
