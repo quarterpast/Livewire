@@ -1,6 +1,6 @@
 require! {
 	"../response".Response
-	"readable-stream".Duplex
+	"readable-stream".Readable
 }
 
 export class StringResponse extends Response
@@ -9,12 +9,9 @@ export class StringResponse extends Response
 	status-code: 200
 
 	(body)~>
-		super new class extends Duplex
+		super new class extends Readable
 			offset: 0
 			_read: (size)->
 				@push body.slice @offset,@offset+size-1
 				@offset += size
 				if @offset > body.length then return @push null # end the stream
-
-			_write: (chunk,encoding,callback)->
-				callback null # disregard input
