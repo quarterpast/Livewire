@@ -1,5 +1,6 @@
 require! [sync,url]
 
+global import require \prelude-ls
 require! {
 	"./router".Router
 	"./routerfactory".RouterFactory
@@ -9,7 +10,6 @@ require! {
 	"./handlercontext".HandlerContext
 }
 
-global import require \prelude-ls
 
 class Livewire
 	use: -> Router.create \ANY true, it
