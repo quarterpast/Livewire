@@ -24,9 +24,11 @@ class Livewire
 				|> concat-map (.handlers ctx)>>map (.bind ctx .async!)
 				|> fold Response~handle, EmptyResponse ctx.path
 				|> (.respond res)
-				|> (.on \error Router.error res)
+				|> (.on \error Router.handle res,ctx)
 
-			Router.error res
+			:handler (err)-> if err? then sync do
+				:handler-fiber -> Router.handle res,ctx,err
+				handler
 
 	remove: (spec)->
 		@routers = reject (.routes spec), @routers
