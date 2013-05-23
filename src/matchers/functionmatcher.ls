@@ -9,4 +9,8 @@ export class FunctionMatcher extends Matcher
 	match: (req)->false isnt @path req
 
 	#extract :: Request -> Map String Any
-	extract: ->@path it
+	extract: ->
+		it.route = it.pathname
+		@path it
+
+	reverse: -> # can't reverse a function

@@ -1,34 +1,23 @@
-require! \require-folder
+require! {
+	"./oop".abstract
+	"./response".Response
+	\require-folder
+}
 
-export class Router
+export class Router implements abstract {\handlers \has \extract \reverse \routes}
 	@subclasses = []
 	@extended = @subclasses~push
 
-	@routers = []
-
-	#create :: Method -> ...Stuff -> Maybe Route
-	@create = (method, ...spec)->
-		if find (.supports? ...spec), @subclasses
-			@routers.push that method,...spec
-		else throw new TypeError "No routers can handle #{spec}."
-
-	#route :: Request -> List Function
-	@route = (req)->
-		filter (.match req), @@routers
-
-	#error :: Response -> Error -> Nothing
-	@error = (res,err)-->
+	@error = id.async!
+	@handle = (.async!) (res,ctx,err)-->
 		if err?
-			res.status-code = 500
-			res.end!
-
 			console.error err.stack ? err.to-string!
 
-	match: ->@method in [\ANY it.method]
-	handlers: ->
-		throw new TypeError "#{@constructor.display-name} does not implement handlers"
-	extract: ->
-		throw new TypeError "#{@constructor.display-name} does not implement extract"
+			@error.sync ctx,err
+			|> Response.create
+			|> (.respond res)
+
+	match: ->@method in [\ANY it.request.method]
 	(@method)~>
 
 

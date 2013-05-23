@@ -1,58 +1,52 @@
 require! [sync,url]
 
+global import require \prelude-ls
 require! {
 	"./router".Router
+	"./routerfactory".RouterFactory
 	"./matcher".Matcher
+	"./response".Response
+	"./responses/emptyresponse".EmptyResponse
+	"./handlercontext".HandlerContext
 }
 
-export Router
-export Matcher
 
-String::pipe = ->it.end @constructor this; it
-Buffer::pipe = ->it.end this; it
+class Livewire
+	use: -> Router.create \ANY true, it
+	log: (res)-> console.log "#{res.status-code} #{@pathname}"
 
-export class Request
-	params: {}
-	(req)~>
-		for k,v of req
-			@[k] = if v instanceof Function then v.bind req else v
-		import url.parse req.url,yes
+	app: (req,res)~>
+		ctx = new HandlerContext req
+		sync do
+			:fiber ~>
+				@factory.route ctx
+				|> each (.extract ctx)>>(ctx.params import)
+				|> concat-map (.handlers ctx)>>map (.bind ctx .async!)
+				|> fold Response~handle, EmptyResponse ctx.path
+				|> (.respond res)
+				|> (.on \error Router.handle res,ctx)
 
-export class Response
-	(res)~>
-		for k,v of res
-			@[k] = if v instanceof Function then v.bind res else v
+			:handler (err)-> if err? then sync do
+				:handler-fiber -> Router.handle res,ctx,err
+				handler
 
-exports.use = -> Router.create \ANY true, it
+	remove: (spec)->
+		@routers = reject (.routes spec), @routers
 
-exports.use (res)->
-	@status-code = 404
-	end$ = res.end
-	res.end = ~>
-		console.log "#{res.status-code} #{@pathname}"
-		end$.apply res,&
+	->
+		@routers = []
+		@factory = new RouterFactory this
 
-	"404 #{@pathname}"
+		import map @factory~make-router, {\ANY \GET \POST \PUT \DELETE \OPTIONS \TRACE \CONNECT \HEAD}
 
-export function app req,res
-	augs =
-		req: Request req
-		res: Response res
-	sync do
-		:fiber ~>
-			Router.route augs.req
-			|> each (.extract augs.req)>>(augs.req.params import)
-			|> concat-map (.handlers req)>>map (func,last)-->
-				augs.res.status-code = 200
-				func.(if func.to-string! == /.async()$/ then \sync else \call) augs.req,augs.res,last
-			|> fold (|>),""
-			|> (.pipe augs.res)
-			|> (.on \error Router.error augs.res)
-
-		Router.error augs.res
-
-
-[\ANY \GET \POST \PUT \DELETE \OPTIONS \TRACE \CONNECT \HEAD] |> each (method)->
-	exports[method] = (...spec)~>Router.create method,...spec
-
-export async = (.async!)
+module.exports = new Livewire import {
+	Matcher
+	Response
+	HandlerContext
+	Router
+	async: (.async!)
+	Context: Livewire
+	magic:
+		sync: (fun)->(...args)->fun.sync null,...args
+		async: (.async!)
+}
