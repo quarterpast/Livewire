@@ -23,7 +23,7 @@
     }
   ],
   "devDependencies": {
-    "LiveScript": "~1.1.1",
+    "LiveScript": "~1.2",
     "buster-assertions": "~0.10.3",
     "buster-test": "~0.6.1",
     "buster-sinon": "~0.6.0"
