@@ -14,10 +14,10 @@ Livewire = require "./src"
 	..GET /^\/test\/(\w+)/, c
 	..GET (->if it.pathname.split '/' .1 is 'other' then a:"hello" else false), d
 
-console.log Livewire.Router.reverse a,{}
-console.log Livewire.Router.reverse b,name:"there"
-console.log try Livewire.Router.reverse c catch => e.message
-console.log try Livewire.Router.reverse d catch => e.message
+# console.log Livewire.Router.reverse a,{}
+# console.log Livewire.Router.reverse b,name:"there"
+# console.log try Livewire.Router.reverse c catch => e.message
+# console.log try Livewire.Router.reverse d catch => e.message
 
 port = process.env.PORT ? 8000
 
