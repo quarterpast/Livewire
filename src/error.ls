@@ -4,7 +4,7 @@ id = -> it
 export handle-error = (f, g, e)-->
 	e.fold f, g
 
-# simple-result :: EitherT Promise Error Response → Promise Response
-export simple-result = handle-error do
+# dev-result :: EitherT Promise Error Response → Promise Response
+export dev-result = handle-error do
 	(err)-> Result.error e.stack
 	(res)-> Result.ok res
