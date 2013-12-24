@@ -4,11 +4,8 @@
   "description": "Livescript microrouting library",
   "version": "0.3.2",
   "dependencies": {
-    "sync": "~0.2.1",
-    "prelude-ls": "~0.6.0",
-    "require-folder": "0.x",
-    "readable-stream": "~1.0.2",
-    "buster-minimal": "0.0.0"
+    "fantasy-options": "git+ssh://git@github.com:fantasyland/fantasy-options.git",
+    "fantasy-async": "0.0.1"
   },
   "repository": {
     "type": "git",
@@ -24,9 +21,7 @@
   ],
   "devDependencies": {
     "LiveScript": "~1.2",
-    "buster-assertions": "~0.10.3",
-    "buster-test": "~0.6.1",
-    "buster-sinon": "~0.6.0"
+    "aver": "0.0.2"
   },
   "scripts": {
     "test": "make test"
