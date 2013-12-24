@@ -1,15 +1,19 @@
 {STATUS_CODES} = require \http
+{Readable} = require \stream
+require \fantasy-streams
 
 export class Result
-	(@body, @status-code, @status = STATUS_CODES[status-code], headers)~>
+	(@body, @status-code = 200, @status = STATUS_CODES[status-code], headers)~>
 		@headers = {
 			'content-length': body.length
 			'content-type': 'text/plain'
 		} import headers
 
-	@ok = (body)-> Result body, 200
-	@not-found = (body)-> Result body, 404
+	@simple = (code, body)-->
+		Result (Readable.of body), code
+	@ok = @simple 200
+	@not-found = @simple 404
 	@redirect = (url, code = 302)->
-		Result "", code, null, location: url
+		Result Readable.empty!, code, null, location: url
 
 	with-headers: (@headers import)
