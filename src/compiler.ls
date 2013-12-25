@@ -2,7 +2,7 @@
 {parse: parse-url} = require \url
 
 # compile-path :: Path → Request → Option Params
-compile-path = (path)->
+export compile-path = (path)->
 	ident = '[a-z$_][a-z0-9$_]*'
 	sigil = ':'
 	params = []
@@ -14,7 +14,6 @@ compile-path = (path)->
 
 	(req)->
 		{pathname} = parse-url req.url
-
 		if (reg.exec pathname)?
 			[route, ...vals] = that
 			Some {[param[i], val] for val,i of vals}
