@@ -10,7 +10,7 @@ export compile-path = (path)->
 		params.push param # yay side effects
 		/([^\/]+)/$
 	end = if '/' is path[path.length - 1] and path isnt '/' then '' else \$
-	reg = RegExp \^ + param-reg + end, \i
+	reg = //^#param-reg#end//i
 
 	(req)->
 		{pathname} = parse-url req.url
