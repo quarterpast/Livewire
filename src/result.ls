@@ -5,7 +5,6 @@ Promise = require \fantasy-promises
 
 module.exports = class Result
 	(@body, @status-code, @status, @headers)~>
-		@headers =  import headers
 
 	@simple = (code, body)-->
 		Promise.of Result (Readable.of body), code, STATUS_CODES[code], {

@@ -16,5 +16,5 @@ export compile-path = (path)->
 		{pathname} = parse-url req.url
 		if (reg.exec pathname)?
 			[route, ...vals] = that
-			Some {[param[i], val] for val,i of vals}
+			Some {[params[i], val] for val,i of vals}
 		else None
