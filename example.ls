@@ -6,7 +6,5 @@
 (.unsafe-perform!) listen 8000 serve route (-> not-found "nope"), [
 	get '/' -> ok "hello world"
 	get '/path' -> ok "hello there"
-	get '/param/:a' ->
-		console.log it
-		ok "hello #{it.params.a}"
+	get '/param/:a' -> ok "hello #{it.params.a}"
 ]
