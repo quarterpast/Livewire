@@ -1,16 +1,18 @@
 {STATUS_CODES} = require \http
 {Readable} = require \stream
 require \fantasy-streams
+Promise = require \fantasy-promises
 
-export class Result
-	(@body, @status-code = 200, @status = STATUS_CODES[status-code], headers)~>
-		@headers = {
-			'content-length': body.length
-			'content-type': 'text/plain'
-		} import headers
+module.exports = class Result
+	(@body, @status-code, @status, @headers)~>
+		@headers =  import headers
 
 	@simple = (code, body)-->
-		Result (Readable.of body), code
+		Promise.of Result (Readable.of body), code, STATUS_CODES[code], {
+			'content-length': body.length
+			'content-type': 'text/plain'
+		}
+
 	@ok = @simple 200
 	@not-found = @simple 404
 	@redirect = (url, code = 302)->
