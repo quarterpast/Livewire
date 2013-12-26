@@ -6,9 +6,10 @@ guard = (cond)->
 
 # respond :: Method → Path → (Request → Promise Response) → Request → Option Promise Response
 export respond = (method, path, responder)-->
+	lower = method.to-lower-case!
 	extract = compile-path path
 	(request)-->
-		<- guard request.method is method .chain
+		<- guard lower is method.to-lower-case! .chain
 		params <- extract request .chain
 		Some responder request import {params}
 
