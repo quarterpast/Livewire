@@ -5,7 +5,10 @@ alt = (f, g, a)-->
 	f a .fold id, (-> g a)
 
 # compact :: [a → Option b] → a → Option B
-compact = (.reduce alt, None)
+compact = (rs, a)-->
+	| rs.length is 0 => None
+	| (o = rs.0 a) instanceof Some => o
+	| otherwise => compact (rs.slice 1), a
 
 # route :: (Option Promise Response → Promise Response) → [Request → Option Promise Response] → Request → Promise Response
 export route = (fallback, rs)-->
