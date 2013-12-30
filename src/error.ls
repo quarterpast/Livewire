@@ -1,4 +1,5 @@
 id = -> it
+Result = require './result'
 
 # handle-error :: (Error → Response) → (a → Response) → EitherT Promise Error Response → Promise Response
 export handle-error = (f, g, e)-->

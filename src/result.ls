@@ -14,6 +14,7 @@ module.exports = class Result
 
 	@ok = @simple 200
 	@not-found = @simple 404
+	@error = @simple 500
 	@redirect = (url, code = 302)->
 		Result Readable.empty!, code, null, location: url
 
