@@ -18,7 +18,7 @@ delay = (n)->
 	get '/wait' ->
 		<- delay 1000 .chain
 		ok "thanks for waiting"
-	post '/post' (req)->
-		p = dev-result ((body-params JSON.parse, req).map ({name})-> "hi there #name")
-		p.chain -> it
+	post '/post' dev-result . (req)->
+		{name} <- body-params JSON.parse, req .map
+		"hi there #name"
 ]

@@ -7,5 +7,5 @@ export handle-error = (f, g, e)-->
 
 # dev-result :: EitherT Promise Error Response → Promise Response
 export dev-result = handle-error do
-	(err)-> Result.error e.stack
-	(res)-> Result.ok res
+	(err)-> Result.error e.stack .extract!
+	(res)-> Result.ok res .extract!

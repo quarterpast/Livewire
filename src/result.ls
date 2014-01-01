@@ -7,15 +7,15 @@ module.exports = class Result
 	(@body, @status-code, @status, @headers)~>
 
 	@simple = (code, body)-->
-		Promise.of Result (Readable.of body), code, STATUS_CODES[code], {
+		Result (Readable.of body), code, STATUS_CODES[code], {
 			'content-length': body.length
 			'content-type': 'text/plain'
 		}
 
-	@ok = @simple 200
-	@not-found = @simple 404
-	@error = @simple 500
+	@ok = Promise.of . @simple 200
+	@not-found = Promise.of . @simple 404
+	@error = Promise.of . @simple 500
 	@redirect = (url, code = 302)->
-		Result Readable.empty!, code, null, location: url
+		Promise.of Result Readable.empty!, code, null, location: url
 
 	with-headers: (@headers import)
