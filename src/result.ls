@@ -18,4 +18,6 @@ module.exports = class Result
 	@redirect = (url, code = 302)->
 		Promise.of Result Readable.empty!, code, null, location: url
 
-	with-headers: (@headers import)
+	with-headers: (more)->
+		@headers import more
+		return this
