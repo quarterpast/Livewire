@@ -3,5 +3,6 @@ module.exports = {
 	... require './error'
 	... require './respond'
 	... require './result'
+	Result: require './result'
 	... require './route'
 }
