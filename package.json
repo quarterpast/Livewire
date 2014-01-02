@@ -23,7 +23,9 @@
   ],
   "devDependencies": {
     "LiveScript": "~1.2",
-    "aver": "0.0.2"
+    "aver": "0.0.2",
+    "faucet": "0.0.0",
+    "tape": "~2.3.2"
   },
   "scripts": {
     "test": "make test"

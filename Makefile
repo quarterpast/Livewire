@@ -21,4 +21,4 @@ watch:
 
 .PHONY: test
 test: all
-	node_modules/.bin/lsc livewire.test.ls
+	node_modules/.bin/faucet test/*.js
