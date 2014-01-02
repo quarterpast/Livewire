@@ -1,5 +1,5 @@
-id = -> it
 Result = require './result'
+{Left, Right} = require \fantasy-eithers
 
 # handle-error :: (Error → Response) → (a → Response) → EitherT Promise Error Response → Promise Response
 export handle-error = (f, g, e)-->
@@ -9,3 +9,7 @@ export handle-error = (f, g, e)-->
 export dev-result = handle-error do
 	(err)-> Result.error e.stack .extract!
 	(res)-> Result.ok res .extract!
+
+export handle-exception = (f)-> ->
+	try Right f ...
+	catch e => Left e

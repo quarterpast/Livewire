@@ -6,7 +6,8 @@
   "dependencies": {
     "fantasy-options": "git+ssh://git@github.com:fantasyland/fantasy-options.git",
     "fantasy-async": "0.0.1",
-    "raw-body": "~1.1.2"
+    "raw-body": "~1.1.2",
+    "fantasy-eithers": "git+ssh://git@github.com:SimonRichardson/fantasy-eithers.git"
   },
   "repository": {
     "type": "git",
