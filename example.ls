@@ -1,8 +1,10 @@
-{route} = require './src/route'
-{get, post, respond} = require './src/respond'
-{ok, not-found} = require './src/result'
-{body-params} = require './src/body'
-{dev-result} = require './src/error'
+{
+	route
+	get, post, respond
+	ok, not-found
+	body-params
+	dev-result
+} = require './lib'
 {serve, listen} = require \fantasy-http
 Promise = require \fantasy-promises
 
