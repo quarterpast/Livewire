@@ -16,3 +16,7 @@ test do
 	"the some contains params": do
 		params = ((compile-path '/:param') '/value').x
 		\param in params and params.param is 'value'
+	"trailing slash implies prefix": do
+		c = compile-path '/trail/'
+		(c '/trail') instanceof Some
+		and (c '/trail/path') instanceof Some
