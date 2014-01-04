@@ -5,7 +5,7 @@
   "version": "0.3.2",
   "dependencies": {
     "fantasy-options": "git+https://github.com/fantasyland/fantasy-options.git",
-    "fantasy-async": "0.0.1",
+    "fantasy-async": "~0.0",
     "raw-body": "~1.1.2",
     "fantasy-eithers": "git+https://github.com/SimonRichardson/fantasy-eithers.git"
   },
