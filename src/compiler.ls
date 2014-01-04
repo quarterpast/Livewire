@@ -1,6 +1,8 @@
 {Some, None} = require \fantasy-options
 {parse: parse-url} = require \url
 
+last = -> it[it.length - 1]
+
 # compile-path :: Path → Request → Option Params
 export compile-path = (path)->
 	ident = '[a-z$_][a-z0-9$_]*'
@@ -9,8 +11,11 @@ export compile-path = (path)->
 	param-reg = path.replace //#sigil(#ident)//i (m,param)->
 		params.push param # yay side effects
 		/([^\/]+)/$
-	end = if '/' is path[path.length - 1] and path isnt '/' then '' else \$
-	reg = //^#param-reg#end//i
+
+	reg = switch
+	| path is '/'      => /^\/$/
+	| '/' is last path => //^#{param-reg}?//i
+	| otherwise        => //^#param-reg\/?$//i # optional trailing slash
 
 	(url)->
 		{pathname} = parse-url url
