@@ -12,8 +12,8 @@ export compile-path = (path)->
 	end = if '/' is path[path.length - 1] and path isnt '/' then '' else \$
 	reg = //^#param-reg#end//i
 
-	(req)->
-		{pathname} = parse-url req.url
+	(url)->
+		{pathname} = parse-url url
 		if (reg.exec pathname)?
 			[route, ...vals] = that
 			Some {[params[i], val] for val,i in vals}
