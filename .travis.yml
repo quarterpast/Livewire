@@ -1,4 +1,4 @@
 language: node_js
 node_js:
   - "0.10"
-env: BUSTER_REPORTER=specification
+  - "0.8"
