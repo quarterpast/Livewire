@@ -14,8 +14,7 @@ test do
 	"compiler should return None on nonmatching path": do
 		((compile-path '/') '/nope') is Option.None
 	"the some contains params": do
-		params = ((compile-path '/:param') '/value').x
-		params.param is 'value'
+		((compile-path '/:param') '/value').x.param is 'value'
 	"trailing slash implies prefix": do
 		c = compile-path '/trail/'
 		(c '/trail') instanceof Option.Some
