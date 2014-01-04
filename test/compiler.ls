@@ -15,7 +15,7 @@ test do
 		((compile-path '/') '/nope') is Option.None
 	"the some contains params": do
 		((compile-path '/:param') '/value').x.param is 'value'
+	"trailing slash matches": do
+		((compile-path '/trail/') '/trail') instanceof Option.Some
 	"trailing slash implies prefix": do
-		c = compile-path '/trail/'
-		(c '/trail') instanceof Option.Some
-		and (c '/trail/path') instanceof Option.Some
+		((compile-path '/trail/') '/trail/path') instanceof Option.Some
