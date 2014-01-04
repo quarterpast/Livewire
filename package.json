@@ -7,7 +7,8 @@
     "fantasy-options": "git+https://github.com/fantasyland/fantasy-options.git",
     "fantasy-async": "~0.0",
     "raw-body": "~1.1.2",
-    "fantasy-eithers": "git+https://github.com/SimonRichardson/fantasy-eithers.git"
+    "fantasy-eithers": "git+https://github.com/SimonRichardson/fantasy-eithers.git",
+    "fantasy-streams": "0.0.0"
   },
   "repository": {
     "type": "git",
