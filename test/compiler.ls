@@ -8,8 +8,11 @@ test do
 	"compiler should be a curried function": do
 		(compile-path '/') instanceof Function
 	"compiler should return an Option": do
-		((compile-path '/') url:'/') instanceof Option
+		((compile-path '/') '/') instanceof Option
 	"compiler should return Some on matching path": do
-		((compile-path '/') url:'/') instanceof Option.Some
+		((compile-path '/') '/') instanceof Option.Some
 	"compiler should return None on nonmatching path": do
-		((compile-path '/') url:'/nope') is Option.None
+		((compile-path '/') '/nope') is Option.None
+	"the some contains params": do
+		params = ((compile-path '/:param') '/value').x
+		\param in params and params.param is 'value'
