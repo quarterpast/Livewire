@@ -19,3 +19,7 @@ test do
 		((compile-path '/trail/') '/trail') instanceof Option.Some
 	"trailing slash implies prefix": do
 		((compile-path '/trail/') '/trail/path') instanceof Option.Some
+	"path trailing slash doesn't matter": do
+		((compile-path '/path') '/path/') instanceof Option.Some
+	"path trailing slash doesn't matter (trailing slash)": do
+		((compile-path '/path/') '/path/') instanceof Option.Some
