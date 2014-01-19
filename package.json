@@ -2,7 +2,7 @@
   "name": "livewire",
   "main": "./lib",
   "description": "Livescript microrouting library",
-  "version": "0.3.2",
+  "version": "0.4",
   "dependencies": {
     "fantasy-options": "git+https://github.com/fantasyland/fantasy-options.git",
     "fantasy-async": "~0.0",
