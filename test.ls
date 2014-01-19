@@ -1,0 +1,1 @@
+module.exports = -> for k,v of it => console.assert v,k

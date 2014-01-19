@@ -2,13 +2,13 @@
   "name": "livewire",
   "main": "./lib",
   "description": "Livescript microrouting library",
-  "version": "0.3.2",
+  "version": "0.4",
   "dependencies": {
-    "sync": "~0.2.1",
-    "prelude-ls": "~0.6.0",
-    "require-folder": "0.x",
-    "readable-stream": "~1.0.2",
-    "buster-minimal": "0.0.0"
+    "fantasy-options": "git+https://github.com/fantasyland/fantasy-options.git",
+    "fantasy-async": "~0.0",
+    "raw-body": "~1.1.2",
+    "fantasy-eithers": "git+https://github.com/SimonRichardson/fantasy-eithers.git",
+    "fantasy-streams": "0.0.0"
   },
   "repository": {
     "type": "git",
@@ -23,10 +23,7 @@
     }
   ],
   "devDependencies": {
-    "LiveScript": "~1.1.1",
-    "buster-assertions": "~0.10.3",
-    "buster-test": "~0.6.1",
-    "buster-sinon": "~0.6.0"
+    "LiveScript": "~1.2"
   },
   "scripts": {
     "test": "make test"
