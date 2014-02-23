@@ -1,5 +1,5 @@
 #Livewire
-is a routing library for [Node.js](https://github.com/joyent/node) written in [LiveScript](https://github.com/gkz/LiveScript). It ships with a bare minimum configuration, and hooks to extend it how you will.
+Purely functional HTTP routing for Node.js.
 
 [![Build Status](https://travis-ci.org/quarterto/Livewire.png?branch=develop)](https://travis-ci.org/quarterto/Livewire)
 
@@ -11,32 +11,40 @@ npm install livewire
 
 ##Usage
 
-```livescript
-let @ = require \livewire
-	@GET "/" ->"hello world"
+```
+{route, get, post, ok, not-found, body-params, redirect} = require \livewire
+User = require \theoretical-user-model
+templates = require \theoretical-templater
 
-	require \http .create-server @app .listen 8000
+route do
+  -> "404 #{it.path}"
+  [
+    get '/' -> ok "hello"
+    get '/user/:id' - > User.get it.params.id .chain templates.user
+    post '/user/:id' (req)->
+      params <- body-params JSON.parse, req .chain
+      model <- User.get req.params.id .chain
+      <- model.update params .save! .chain
+      redirect '/user/#id'
+  ]
 ```
 
-```bash
-$ curl http://localhost:8000
-hello world
-```
+##API
+### Handlers
 
-##Extending
+#### `respond : Method → Path → (Request → Promise Response) → Request → Option Promise Response`
 
-```livescript
-class AwesomeRouter extends livewire.Router
-	@supports (instanceof Awesome)
-	match:   -> it is @awesome
-	extract: -> super @awesome
+Takes a string method and path, a handler, and a request, and maybe gives back a promise for a response. The `Option` is `Some` if the method and path match and `None` if they don't.
 
-	(method,@awesome,handler)->
-		super method
-		@handlers = [] ++ handler
-```
+#### `get`, `post` *et al*
+Are just `respond` partially applied with the method.
+
+### Results
+
+
+
 
 ##Licence
 [MIT.](https://github.com/quarterto/Livewire/blob/master/licence.md)
 
-&copy;2012-2013 Matt Brennan
+&copy;2012-2014 Matt Brennan
