@@ -1,12 +1,15 @@
 require! {
-	'../test'
+	'karma-sinon-expect'.expect
 	'../lib/route'.route
 	'fantasy-options'.Some
 	'fantasy-options'.None
+	'fantasy-promises'.Promise
 }
 
-test do
-	"calls fallback if empty list": (done)->
-		do route do
-			-> done null true
-			[]
+# export
+# 	"Route":
+# 		"calls fallback if empty list": ->
+# 			fallback = expect.sinon.stub!
+# 			fallback.returns Promise.of "hello"
+# 			fb = route fallback, []
+# 			console.log f

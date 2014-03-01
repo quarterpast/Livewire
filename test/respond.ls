@@ -1,8 +1,9 @@
 require! {
-	'../test'
+	'karma-sinon-expect'.expect
 	'../lib/respond'
 }
 
-test do
-	"should create dsl methods": do
-		<[get post put delete patch options head trace connect]>.every (of respond)
+export
+	"should create dsl methods": ->
+		expect respond
+		.to.have.keys <[get post put delete patch options head trace connect]>

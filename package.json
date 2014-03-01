@@ -26,7 +26,8 @@
     "LiveScript": "~1.2",
     "make-livescript": "0.0.0",
     "istanbul": "~0.2.4",
-    "require-folder": "0.0.7"
+    "mocha": "~1.17.1",
+    "karma-sinon-expect": "~0.1.3"
   },
   "scripts": {
     "test": "make test"

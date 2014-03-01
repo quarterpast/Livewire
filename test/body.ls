@@ -1,5 +1,5 @@
 require! {
-	'../test'
+	'karma-sinon-expect'.expect
 	'../lib/body'.body-params
 	stream.Readable
 	\fantasy-streams
@@ -15,25 +15,28 @@ create-error-request = (err)->
 
 id = -> it
 
-test do
-	"returns an either transformed promise": do
-		(body-params id, create-request "hello").run.fork instanceof Function
+export
+	"returns an either transformed promise": ->
+		expect (body-params id, create-request "hello").run.fork
+		.to.be.a Function
 	"resolves to the body": (done)->
-		(body-params id, create-request "hello").run.fork ->
-			done do
-				if it.l? then that
-				it.r is "hello"
+		body-params id, create-request "hello"
+		.run.fork ({l,r})->
+			expect r .to.be "hello"
+			done l
 	"resolves to the parsed body": (done)->
-		(body-params JSON.parse, create-request JSON.stringify a:1).run.fork ->
-			done do
-				if it.l? then that
-				it.r.a is 1
+		body-params JSON.parse, create-request JSON.stringify a:1
+		.run.fork ({l,r})->
+			expect r .to.have.property \a 1
+			done l
 	"passes stream errors on the left": (done)->
 		body-params do
 			JSON.parse
 			create-error-request new Error "hello"
-		.run.fork ->
-			done null it.l.message is "hello"
+		.run.fork ({l})->
+			expect l.message .to.be "hello"
+			done!
 	"passes parse errors on the left": (done)->
-		(body-params JSON.parse, create-request "not json").run.fork ->
-			done null it.l instanceof SyntaxError
+		(body-params JSON.parse, create-request "not json").run.fork ({l})->
+			expect l .to.be.a SyntaxError
+			done!
