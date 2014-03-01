@@ -1,6 +1,6 @@
 {Some, None} = require \fantasy-options
 
-# compact :: [a → Option b] → a → Option B
+# compact :: [a → Option b] → a → Option b
 compact = (rs, a)-->
 	| rs.length is 0 => None
 	| (o = rs.0 a) instanceof Some => o
@@ -8,6 +8,6 @@ compact = (rs, a)-->
 
 id = -> it
 
-# route :: (Option Promise Response → Promise Response) → [Request → Option Promise Response] → Request → Promise Response
+# route :: (() → b) → [a → Option b] → a → b
 exports.route = (fallback, rs)->
 	(compact rs) >> (.fold id, fallback)
