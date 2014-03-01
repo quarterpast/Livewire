@@ -9,5 +9,5 @@ compact = (rs, a)-->
 id = -> it
 
 # route :: (Option Promise Response → Promise Response) → [Request → Option Promise Response] → Request → Promise Response
-export route = (fallback, rs)->
+exports.route = (fallback, rs)->
 	(compact rs) >> (.fold id, fallback)

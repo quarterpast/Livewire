@@ -4,7 +4,7 @@
 last = -> it[it.length - 1]
 
 # compile-path :: Path → Request → Option Params
-export compile-path = (path)->
+exports.compile-path = (path)->
 	ident = '[a-z$_][a-z0-9$_]*'
 	sigil = ':'
 	params = []

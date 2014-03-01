@@ -6,7 +6,7 @@ Promise = require \fantasy-promises
 EitherPromise = EitherT Promise
 
 # body-params :: (String → Params) → Request → EitherT Promise Error Params
-export body-params = (parser, req)-->
+exports.body-params = (parser, req)-->
 	try
 		get-body req, {
 			length: req.headers.'content-length'
