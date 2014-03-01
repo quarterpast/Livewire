@@ -36,4 +36,4 @@ test do
 			done null it.l.message is "hello"
 	"passes parse errors on the left": (done)->
 		(body-params JSON.parse, create-request "not json").run.fork ->
-			done null it instanceof SyntaxError
+			done null it.l instanceof SyntaxError
