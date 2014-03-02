@@ -1,12 +1,11 @@
 require! {
 	'karma-sinon-expect'.expect
 	'../lib/body'.body-params
-	stream.Readable
-	\fantasy-streams
+	from
 }
 
 create-request = (str)->
-	(Readable.of str) import headers: 'content-length': str.length
+	(from [str]) import headers: 'content-length': str.length
 create-error-request = (err)->
 	e = new process.EventEmitter
 	e.headers = 'content-length':0

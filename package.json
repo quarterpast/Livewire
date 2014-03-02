@@ -8,7 +8,7 @@
     "fantasy-async": "~0.0",
     "raw-body": "~1.1.2",
     "fantasy-eithers": "git+https://github.com/SimonRichardson/fantasy-eithers.git",
-    "fantasy-streams": "0.0.0"
+    "from": "~0.1.3"
   },
   "repository": {
     "type": "git",
@@ -29,7 +29,8 @@
     "mocha": "~1.17.1",
     "karma-sinon-expect": "~0.1.3",
     "fantasy-eithers": "git://github.com/fantasyland/fantasy-eithers",
-    "fantasy-options": "git://github.com/quarterto/fantasy-options#lazy-orelse"
+    "fantasy-options": "git://github.com/quarterto/fantasy-options#lazy-orelse",
+    "concat-stream": "~1.4.1"
   },
   "scripts": {
     "test": "make test"
