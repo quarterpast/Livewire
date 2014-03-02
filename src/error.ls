@@ -13,3 +13,6 @@ exports.dev-result = exports.handle-error do
 exports.handle-exception = (f)-> ->
 	try Right f ...
 	catch e => Left e
+
+# ignore curry in coverage
+/* istanbul ignore next */

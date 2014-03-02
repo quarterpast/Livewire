@@ -21,3 +21,6 @@ module.exports = class Result
 	with-headers: (more)->
 		@headers import more
 		return this
+
+# ignore curry in coverage
+/* istanbul ignore next */

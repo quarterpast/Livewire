@@ -16,3 +16,6 @@ exports.body-params = (parser, req)-->
 			EitherPromise.of parser body
 		catch err
 			EitherPromise new Promise (<| Left err)
+
+# ignore curry in coverage
+/* istanbul ignore next */

@@ -9,3 +9,6 @@ compact = (rs)-> (a)->
 # route :: (() → b) → [a → Option b] → a → b
 exports.route = (fallback, rs)-->
 	(compact rs) >> (.get-or-else fallback)
+
+# ignore curry in coverage
+/* istanbul ignore next */

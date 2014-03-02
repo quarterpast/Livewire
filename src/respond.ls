@@ -15,3 +15,6 @@ exports.respond = (method, path, responder)-->
 
 for m in <[get post put delete patch options head trace connect]>
 	exports[m] = exports.respond m
+
+# ignore curry in coverage
+/* istanbul ignore next */
