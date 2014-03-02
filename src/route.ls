@@ -1,13 +1,14 @@
 {Some, None} = require \fantasy-options
 
-# compact :: [a → Option b] → a → Option B
-compact = (rs, a)-->
+# compact :: [a → Option b] → a → Option b
+compact = (rs)-> (a)->
 	| rs.length is 0 => None
 	| (o = rs.0 a) instanceof Some => o
-	| otherwise => compact (rs.slice 1), a
+	| otherwise => (compact rs.slice 1) a
 
-id = -> it
+# route :: (() → b) → [a → Option b] → a → b
+exports.route = (fallback, rs)-->
+	(compact rs) >> (.get-or-else fallback)
 
-# route :: (Option Promise Response → Promise Response) → [Request → Option Promise Response] → Request → Promise Response
-export route = (fallback, rs)->
-	(compact rs) >> (.fold id, fallback)
+# ignore curry in coverage
+/* istanbul ignore next */

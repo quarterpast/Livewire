@@ -1,13 +1,14 @@
-{STATUS_CODES} = require \http
-{Readable} = require \stream
-require \fantasy-streams
-Promise = require \fantasy-promises
+require! {
+	http.STATUS_CODES
+	from
+	Promise: \fantasy-promises
+}
 
 module.exports = class Result
 	(@body, @status-code, @status, @headers)~>
 
 	@simple = (code, body)-->
-		Result (Readable.of body), code, STATUS_CODES[code], {
+		Result (from [body]), code, STATUS_CODES[code], {
 			'content-length': body.length
 			'content-type': 'text/plain'
 		}
@@ -16,8 +17,11 @@ module.exports = class Result
 	@not-found = Promise.of . @simple 404
 	@error = Promise.of . @simple 500
 	@redirect = (url, code = 302)->
-		Promise.of Result Readable.empty!, code, null, location: url
+		Promise.of Result (from []), code, null, location: url
 
 	with-headers: (more)->
 		@headers import more
 		return this
+
+# ignore curry in coverage
+/* istanbul ignore next */
