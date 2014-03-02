@@ -7,9 +7,9 @@
     "fantasy-options": "git+https://github.com/fantasyland/fantasy-options.git",
     "fantasy-async": "~0.0",
     "raw-body": "~1.1.2",
-    "fantasy-eithers": "git+https://github.com/SimonRichardson/fantasy-eithers.git",
+    "fantasy-eithers": "git+https://github.com/fantasyland/fantasy-eithers.git",
     "from": "~0.1.3",
-    "fantasy-promises": "git://github.com/quarterto/fantasy-promises#patch-2",
+    "fantasy-promises": "git://github.com/fantasyland/fantasy-promises",
     "qs": "~0.6.6"
   },
   "repository": {
