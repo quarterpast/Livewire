@@ -56,3 +56,10 @@ export 'Error handler':
 			res.body.pipe concat-stream encoding:\string, (data)->
 				expect data .to.be \stack
 				done!
+		'returns ok result of if something on the right': (done)->
+			res = error.dev-result Right "hello"
+
+			expect res .to.have.property \statusCode 200
+			res.body.pipe concat-stream encoding:\string, (data)->
+				expect data .to.be "hello"
+				done!
