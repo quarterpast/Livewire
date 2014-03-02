@@ -1,52 +1,11 @@
-require! [sync,url]
-
-global import require \prelude-ls
-require! {
-	"./router".Router
-	"./routerfactory".RouterFactory
-	"./matcher".Matcher
-	"./response".Response
-	"./responses/emptyresponse".EmptyResponse
-	"./handlercontext".HandlerContext
+module.exports = {
+	... require './body'
+	... require './error'
+	... require './respond'
+	... require './result'
+	Result: require './result'
+	... require './route'
 }
 
-
-class Livewire
-	use: -> Router.create \ANY true, it
-	log: (res)-> console.log "#{res.status-code} #{@pathname}"
-
-	app: (req,res)~>
-		ctx = new HandlerContext req
-		sync do
-			:fiber ~>
-				@factory.route ctx
-				|> each (.extract ctx)>>(ctx.params import)
-				|> concat-map (.handlers ctx)>>map (.bind ctx .async!)
-				|> fold Response~handle, EmptyResponse ctx.path
-				|> (.respond res)
-				|> (.on \error Router.handle res,ctx)
-
-			:handler (err)-> if err? then sync do
-				:handler-fiber -> Router.handle res,ctx,err
-				handler
-
-	remove: (spec)->
-		@routers = reject (.routes spec), @routers
-
-	->
-		@routers = []
-		@factory = new RouterFactory this
-
-		import map @factory~make-router, {\ANY \GET \POST \PUT \DELETE \OPTIONS \TRACE \CONNECT \HEAD}
-
-module.exports = new Livewire import {
-	Matcher
-	Response
-	HandlerContext
-	Router
-	async: (.async!)
-	Context: Livewire
-	magic:
-		sync: (fun)->(...args)->fun.sync null,...args
-		async: (.async!)
-}
+# ignore import in coverage
+/* istanbul ignore next */
