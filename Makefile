@@ -1,25 +1,17 @@
-LIB=lib
-SRC=src
+include node_modules/make-livescript/livescript.mk
 
-LS_OPTS=-k
+.PHONY: test cover watch
+test: cover
+	node_modules/.bin/istanbul report text
+	node_modules/.bin/istanbul check-coverage --statements -1 --branches -1 --functions -1
 
-LS_FILES = $(shell find $(SRC)/ -type f -name '*.ls')
-JS_FILES = $(patsubst $(SRC)/%.ls, $(LIB)/%.js, $(LS_FILES))
+cover: all
+	node_modules/.bin/istanbul cover node_modules/.bin/_mocha -- -u exports --compilers ls:LiveScript test/*.ls
 
-.PHONY: all
-all: $(JS_FILES)
+coverage-report: coverage/index.html
 
-$(LIB)/%.js: $(SRC)/%.ls
-	@mkdir -p "$(@D)"
-	node_modules/.bin/lsc -pc $(LS_OPTS) "$<" > "$@"
-
-clean:
-	rm -rf lib
+coverage/index.html: cover
+	node_modules/.bin/istanbul report html
 
 watch:
-	@while :; do inotifywait -qr -e modify -e create src; make; sleep 1; done
-
-.PHONY: test
-
-test: all
-	node_modules/.bin/lsc test/*.ls
+	fswatch src:test 'make coverage-report'

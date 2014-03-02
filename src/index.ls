@@ -6,3 +6,6 @@ module.exports = {
 	Result: require './result'
 	... require './route'
 }
+
+# ignore import in coverage
+/* istanbul ignore next */
