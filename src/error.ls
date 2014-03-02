@@ -1,7 +1,7 @@
 Result = require './result'
 {Left, Right} = require \fantasy-eithers
 
-# handle-error :: (Error → Response) → (a → Response) → EitherT Promise Error Response → Promise Response
+# handle-error :: (a → c) → (b → c) → EitherPromise a b → Promise c
 exports.handle-error = (f, g, e)-->
 	e.fold f, g
 
