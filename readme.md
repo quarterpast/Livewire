@@ -11,7 +11,7 @@ npm install livewire
 
 ##Usage
 
-```
+```livescript
 {route, get, post, ok, not-found, body-params, redirect} = require \livewire
 User = require \theoretical-user-model
 templates = require \theoretical-templater
@@ -39,8 +39,7 @@ Takes a string method and path, a handler, and a request, and maybe gives back a
 #### `get`, `post` *et al*
 Are just `respond` partially applied with the method.
 
-### Results
-
+###TODO doc more
 
 
 
