@@ -11,7 +11,7 @@ module.exports = respond = (method, path, responder)-->
 	(request)->
 		<- guard lower is request.method.to-lower-case! .chain
 		params <- extract request.url .chain
-		Some responder request import {params}
+		Some responder request import {params, route:path}
 
 for m in <[get post put delete patch options head trace connect]>
 	module.exports[m] = respond m
