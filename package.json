@@ -4,12 +4,12 @@
   "description": "Livescript microrouting library",
   "main": "./lib",
   "dependencies": {
-    "fantasy-options": "git+https://github.com/fantasyland/fantasy-options.git",
+    "fantasy-options": "git://github.com/quarterto/fantasy-options#lazy-orelse",
     "fantasy-async": "~0.0",
-    "raw-body": "~1.1.2",
-    "fantasy-eithers": "git+https://github.com/fantasyland/fantasy-eithers.git",
-    "from": "~0.1.3",
+    "fantasy-eithers": "git://github.com/fantasyland/fantasy-eithers",
     "fantasy-promises": "git://github.com/fantasyland/fantasy-promises",
+    "raw-body": "~1.1.2",
+    "from": "~0.1.3",
     "qs": "~0.6.6"
   },
   "repository": {
@@ -30,8 +30,6 @@
     "istanbul": "~0.2.4",
     "mocha": "~1.17.1",
     "karma-sinon-expect": "~0.1.3",
-    "fantasy-eithers": "git://github.com/fantasyland/fantasy-eithers",
-    "fantasy-options": "git://github.com/quarterto/fantasy-options#lazy-orelse",
     "concat-stream": "~1.4.1"
   },
   "scripts": {
