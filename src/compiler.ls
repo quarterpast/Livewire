@@ -1,7 +1,7 @@
 {Some, None} = require \fantasy-options
 {parse: parse-url} = require \url
 
-last = -> it[it.length - 1]
+last = ([..., x])-> x
 
 # compile-path :: Path → Request → Option Params
 exports.compile-path = (path)->
