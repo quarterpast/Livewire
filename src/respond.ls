@@ -2,7 +2,7 @@
 σ = require \highland
 
 guard = (cond)->
-	if cond then σ [null] else σ.nil
+	if cond then σ [null] else σ []
 
 # respond :: Method → Path → (Request → Promise Response) → Request → Option Promise Response
 module.exports = respond = (method, path, responder)-->
