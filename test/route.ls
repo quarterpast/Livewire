@@ -1,39 +1,34 @@
 require! {
 	'karma-sinon-expect'.expect
 	'../lib/route'.route
-	'fantasy-options'.Some
-	'fantasy-options'.None
+	σ: highland
 }
 
 export
 	"Route":
-		"calls fallback if empty list": ->
-			fallback = expect.sinon.stub!
-			fallback.returns "hello"
-			res = route fallback, []
-			expect res! .to.be "hello"
-			expect fallback .to.be.called!
+		"responds with empty stream when empty list": (done)->
+			r = route []
+			r!.to-array (xs)->
+				expect xs .to.be.empty!
+				done!
 
-		"calls first match": ->
-			rt = expect.sinon.stub!
-			rt.returns Some "hello"
-			res = route (->), [rt]
+		"responds with a function that doesn't return empty stream": (done)->
+			r = route [
+				-> σ <[hello]>
+			]
 
-			expect res "world" .to.be "hello"
-			expect rt .to.be.called-with "world"
+			r!.to-array (xs)->
+				expect xs .to.be.eql <[hello]>
+				done!
 
-		"calls first match when multiple": ->
-			rt = expect.sinon.stub!
-			rt.returns Some "hello"
-			res = route (->), [(-> None), rt]
+		"skips past functions that return nil": (done)->
+			r = route [
+				-> σ []
+				-> σ []
+				-> σ <[hello]>
+			]
 
-			expect res "world" .to.be "hello"
-			expect rt .to.be.called-with "world"
+			r!.to-array (xs)->
+				expect xs .to.be.eql <[hello]>
+				done!
 
-		"calls fallback if no match": ->
-			fallback = expect.sinon.stub!
-			fallback.returns "hello"
-			res = route fallback, [-> None]
-
-			expect res! .to.be "hello"
-			expect fallback .to.be.called!
