@@ -6,3 +6,6 @@ exports.route = (fns, req)-->
 		(acc, fn)->
 			acc.otherwise fn req
 		σ []
+
+# ignore curry in coverage
+/* istanbul ignore next */
