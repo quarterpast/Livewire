@@ -1,17 +1,17 @@
-{Some, None} = require \fantasy-options
 {compile-path} = require './compiler'
+σ = require \highland
 
 guard = (cond)->
-	if cond then Some null else None
+	if cond then σ [null] else σ.nil
 
 # respond :: Method → Path → (Request → Promise Response) → Request → Option Promise Response
 module.exports = respond = (method, path, responder)-->
 	lower = method.to-lower-case!
 	extract = compile-path path
 	(request)->
-		<- guard lower is request.method.to-lower-case! .chain
-		params <- extract request.url .chain
-		Some responder request import {params, route:path}
+		<- guard lower is request.method.to-lower-case! .flat-map
+		params <- extract request.url .flat-map
+		responder request import {params, route:path}
 
 for m in <[get post put delete patch options head trace connect]>
 	module.exports[m] = respond m
