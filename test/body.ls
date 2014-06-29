@@ -22,7 +22,6 @@ export
 		"resolves to the body": (done)->
 			body.raw create-request "hello"
 			.to-array (xs)->
-				console.log typeof xs.0
 				expect xs .to.eql <[hello]>
 				done!
 		"resolves to the parsed body": (done)->

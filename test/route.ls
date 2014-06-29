@@ -32,3 +32,15 @@ export
 				expect xs .to.be.eql <[hello]>
 				done!
 
+		"returns first nonempty stream": (done)->
+			r = route [
+				-> σ []
+				-> σ <[hello]>
+				-> σ <[world]>
+			]
+
+			r!.to-array (xs)->
+				expect xs .to.be.eql <[hello]>
+				done!
+
+
