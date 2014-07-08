@@ -11,7 +11,7 @@ r = route [
 	get '/' -> σ <[hello]>
 	get '/blah' -> σ <[foo]>
 	get '/foo/:bar' ({params})-> σ [params.bar]
-	#	-> σ ['not found']
+	-> σ ['not found']
 ]
 
 http.create-server (req, res)->
