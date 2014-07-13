@@ -1,16 +1,13 @@
 {
   "name": "livewire",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Livescript microrouting library",
   "main": "./lib",
   "dependencies": {
-    "fantasy-options": "git+https://github.com/fantasyland/fantasy-options.git",
     "fantasy-async": "~0.0",
-    "raw-body": "~1.1.2",
-    "fantasy-eithers": "git+https://github.com/fantasyland/fantasy-eithers.git",
-    "from": "~0.1.3",
-    "fantasy-promises": "git://github.com/fantasyland/fantasy-promises",
-    "qs": "~0.6.6"
+    "highland": "~1.26.3",
+    "qs": "~0.6.6",
+    "raw-body": "~1.1.2"
   },
   "repository": {
     "type": "git",
@@ -26,13 +23,13 @@
   ],
   "devDependencies": {
     "LiveScript": "~1.2",
-    "make-livescript": "0.0.0",
+    "concat-stream": "~1.4.6",
+    "freeport": "~1.0.2",
     "istanbul": "~0.2.4",
-    "mocha": "~1.17.1",
     "karma-sinon-expect": "~0.1.3",
-    "fantasy-eithers": "git://github.com/fantasyland/fantasy-eithers",
-    "fantasy-options": "git://github.com/quarterto/fantasy-options#lazy-orelse",
-    "concat-stream": "~1.4.1"
+    "make-livescript": "0.0.0",
+    "from": "~0.1.3",
+    "mocha": "~1.17.1"
   },
   "scripts": {
     "test": "make test"

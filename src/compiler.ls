@@ -1,7 +1,7 @@
-{Some, None} = require \fantasy-options
+σ = require \highland
 {parse: parse-url} = require \url
 
-last = -> it[it.length - 1]
+last = ([..., x])-> x
 
 # compile-path :: Path → Request → Option Params
 exports.compile-path = (path)->
@@ -21,5 +21,5 @@ exports.compile-path = (path)->
 		{pathname} = parse-url url
 		if (reg.exec pathname)?
 			[route, ...vals] = that
-			Some {[params[i], val] for val,i in vals}
-		else None
+			σ [{[params[i], val] for val,i in vals}]
+		else σ []
