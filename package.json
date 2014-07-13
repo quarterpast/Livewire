@@ -9,7 +9,7 @@
     "fantasy-options": "git://github.com/quarterto/fantasy-options#lazy-orelse",
     "fantasy-promises": "git://github.com/fantasyland/fantasy-promises",
     "from": "~0.1.3",
-    "highland": "git://github.com/quarterto/highland#otherwise",
+    "highland": "^1.26.3",
     "qs": "~0.6.6",
     "raw-body": "~1.1.2"
   },
