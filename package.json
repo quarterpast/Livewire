@@ -5,11 +5,7 @@
   "main": "./lib",
   "dependencies": {
     "fantasy-async": "~0.0",
-    "fantasy-eithers": "git://github.com/fantasyland/fantasy-eithers",
-    "fantasy-options": "git://github.com/quarterto/fantasy-options#lazy-orelse",
-    "fantasy-promises": "git://github.com/fantasyland/fantasy-promises",
-    "from": "~0.1.3",
-    "highland": "^1.26.3",
+    "highland": "~1.26.3",
     "qs": "~0.6.6",
     "raw-body": "~1.1.2"
   },
@@ -27,11 +23,12 @@
   ],
   "devDependencies": {
     "LiveScript": "~1.2",
-    "concat-stream": "^1.4.6",
-    "freeport": "^1.0.2",
+    "concat-stream": "~1.4.6",
+    "freeport": "~1.0.2",
     "istanbul": "~0.2.4",
     "karma-sinon-expect": "~0.1.3",
     "make-livescript": "0.0.0",
+    "from": "~0.1.3",
     "mocha": "~1.17.1"
   },
   "scripts": {
