@@ -1,26 +1,22 @@
-async = require \fantasy-async
-get-body = async require \raw-body
-{EitherT, Left} = require \fantasy-eithers
-Promise = require \fantasy-promises
+σ = require \highland
+get-body = σ.wrap-callback require \raw-body
 {handle-exception} = require './error'
 qs = require \qs
 
-EitherPromise = EitherT Promise
-
-# body-params :: (String → EitherPromise Error Params) → Request → EitherPromise Error Params
+# body-params :: (String → Stream Params) → Request → Stream Params
 exports.body-params = (parser, req)-->
 	get-body req, {
 		length: req.headers.'content-length'
 		encoding: \utf8
 		limit: \1mb
-	} .chain parser
+	} .flat-map parser
 
-exports.json-parse = EitherPromise . Promise.of . handle-exception JSON.parse
-exports.query-parse = EitherPromise . Promise.of . handle-exception qs.parse
+exports.json-parse = handle-exception JSON.parse
+exports.query-parse = handle-exception qs.parse
 
 exports.json  = exports.body-params exports.json-parse
 exports.query = exports.body-params exports.query-parse
-exports.raw   = exports.body-params EitherPromise.of
+exports.raw   = exports.body-params -> σ [it]
 
 # ignore curry in coverage
 /* istanbul ignore next */
