@@ -1,5 +1,6 @@
 # Livewire [![Build Status](https://travis-ci.org/quarterto/Livewire.png?branch=develop)](https://travis-ci.org/quarterto/Livewire)
-Streaming HTTP routing for Node.js. Best served with [Oban](https://github.com/quarterto/Oban) and a dash of water.
+
+Streaming HTTP routing for Node.js. Best served with [Oban](https://github.com/quarterto/Oban) and a dash of water. Built on [Highland](https://github.com/quarterto/Highland).
 
 ```bash
 npm install livewire
@@ -14,7 +15,7 @@ templates = require \theoretical-templater
 
 route [
   get '/' -> ok "hello"
-  get '/user/:id' - > User.get it.params.id .chain templates.user
+  get '/user/:id' (req)-> User.get req.params.id .chain templates.user
   post '/user/:id' (req)->
     params <- body-params JSON.parse, req .chain
     model <- User.get req.params.id .chain
