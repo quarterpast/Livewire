@@ -4,7 +4,6 @@
   "description": "Livescript microrouting library",
   "main": "./lib",
   "dependencies": {
-    "fantasy-async": "~0.0",
     "highland": "~1.26.3",
     "qs": "~0.6.6",
     "raw-body": "~1.1.2"
