@@ -9,7 +9,9 @@ npm install livewire
 ## Example
 
 ```livescript
-{route, get, post, ok, not-found, body-params, redirect} = require \livewire
+{route, get, post} = require \livewire
+{ok, not-found} = require \dram
+{body-params} = require \corps
 User = require \theoretical-user-model
 templates = require \theoretical-templater
 
@@ -38,11 +40,12 @@ Takes a string method and path, a handler, and a request, and gives back a strea
 #### `get`, `post` [*et al*](/src/route.ls#L16)
 Are just `respond` partially applied with the method.
 
-### Request body
-Body handlers buffer up the request body, parse it with something, and stream the result. There are 3 parsers: `raw`, `json` and `query`, which do what you expect, or you can call `body-params` with a parser of your own (which takes a string body and returns whatever).
-
 ### Paths
 A simple string path matches exactly. If the last character is `/`, it matches a path prefix, unless the path is `/` exactly. Paths can contain parameters, which are of the form `:ident`. This match any non-`/` string, and extract the value into `req.params` under the key given by the identifier.
+
+### Request body
+Request body handling has been removed from Livewire 0.6, and split out into its own module, [Corps](https://github.com/quarterto/Corps).
+
 
 ## Licence
 [MIT.](https://github.com/quarterto/Livewire/blob/master/licence.md)
