@@ -14,7 +14,7 @@ assert-response = (addr, path, response, callback)-->
 			callback!
 	.on \error callback
 
-assert-response-options-body = (body, options, response, callback)-->
+assert-response-options = (options, response, callback)-->
 	http.request do
 		options
 		(res)->
@@ -22,9 +22,7 @@ assert-response-options-body = (body, options, response, callback)-->
 				expect data .to.be response
 				callback!
 	.on \error callback
-	.end body
-
-assert-response-options = assert-response-options-body null
+	.end!
 
 export
 	before: (done)->
@@ -33,9 +31,7 @@ export
 			get '/blah' -> σ <[foo]>
 			get '/foo/:bar' ({params})-> σ [params.bar]
 			post '/postroute' -> σ ['post route']
-			post '/body/json' (req)-> json  req .map (.key)
-			post '/body/raw'  (req)-> raw   req
-			post '/body/qs'   (req)-> query req .map (.key)
+
 			-> σ ['not found']
 		]
 
@@ -43,11 +39,7 @@ export
 		done e if e?
 
 		@assert-response = assert-response "http://localhost:#{@port}"
-		@assert-response-options-body = (body, options, response, cb)~>
-			assert-response-options-body do
-				body
-				options import host:\localhost port:@port
-				response, cb
+
 		@assert-response-options = (options, response, cb)~>
 			assert-response-options do
 				options import host:\localhost port:@port
@@ -77,21 +69,3 @@ export
 					'post route' done
 			'misses with get': (done)->
 				@assert-response '/postroute' 'not found' done
-
-		'json body extraction': (done)->
-			@assert-response-options-body do
-				JSON.stringify key:\value
-				path: '/body/json' method: \POST
-				'value' done
-
-		'raw body extraction': (done)->
-			@assert-response-options-body do
-				'raw'
-				path: '/body/raw' method: \POST
-				'raw' done
-
-		'querystring body extraction': (done)->
-			@assert-response-options-body do
-				querystring.stringify key:\value
-				path: '/body/qs' method: \POST
-				'value' done
