@@ -30,7 +30,7 @@ route [
 
 ## Documentation
 ### Routing
-#### `route : ∀a,b. [a → Stream b] → a → Stream b
+#### `route : ∀a,b. [a → Stream b] → a → Stream b`
 Calls the functions in turn and returns the first nonempty stream. Given our handlers return empty streams for non-matching routes, this is sufficient to call the first matching route handler.
 
 ### Handlers
