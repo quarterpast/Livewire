@@ -1,4 +1,4 @@
-# Livewire [![Build Status](https://travis-ci.org/quarterto/Livewire.png?branch=develop)](https://travis-ci.org/quarterto/Livewire)
+# Livewire [![Build Status](https://travis-ci.org/quarterto/Livewire.png?branch=develop)](https://travis-ci.org/quarterto/Livewire) [![wercker status](https://app.wercker.com/status/7d6a7cd9aed086fed5ea942dda9edc4e/s "wercker status")](https://app.wercker.com/project/bykey/7d6a7cd9aed086fed5ea942dda9edc4e)
 
 Streaming HTTP routing for Node.js. Best served with [Oban](https://github.com/quarterto/Oban) and a dash of water. Built on [Highland](https://github.com/quarterto/Highland).
 
