@@ -26,6 +26,11 @@ export
 			expect xs .to.eql [param:'value']
 			done!
 
+	"supports multiple params": (done)->
+		((compile-path '/:param/:param2') '/value/foo').to-array (xs)->
+			expect xs .to.eql [param:'value' param2:'foo']
+			done!
+
 	"trailing slash matches":  (done)->
 		((compile-path '/trail/') '/trail').to-array (xs)->
 			expect xs .not.to.be.empty!
