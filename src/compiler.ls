@@ -8,7 +8,7 @@ exports.compile-path = (path)->
 	ident = '[a-z$_][a-z0-9$_]*'
 	sigil = ':'
 	params = []
-	param-reg = path.replace //#sigil(#ident)//i (m,param)->
+	param-reg = path.replace //#sigil(#ident)//ig (m,param)->
 		params.push param # yay side effects
 		/([^\/]+)/$
 
