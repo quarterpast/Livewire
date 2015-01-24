@@ -1,6 +1,6 @@
 {
   "name": "livewire",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Livescript microrouting library",
   "main": "./lib",
   "dependencies": {
